@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Đăng nhập</h2>
+        <% if (error) { %>
+            <p class="error"><%= error %></p>
+        <% } %>
+        <form action="/login" method="POST">
+            <input type="text" name="username" placeholder="Tên đăng nhập" required>
+            <input type="password" name="password" placeholder="Mật khẩu" required>
+            <button type="submit">Đăng nhập</button>
+        </form>
+        <p>Chưa có tài khoản? <a href="/register">Đăng ký</a></p>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const username = document.getElementById("loginUsername").value;
+            const password = document.getElementById("loginPassword").value;
+
+            fetch("http://localhost:8081/user/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.success) window.location.href = "/dashboard";
+            })
+            .catch(error => console.error("Lỗi đăng nhập:", error));
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<main>
+    <h2>📖 Thêm chương mới cho "<%= novel.Title %>"</h2>
+
+    <form action="/novels/<%= novel.NovelID %>/add-chapter" method="POST">
+        <label for="ChapterNumber">Số thứ tự chương:</label>
+        <input type="number" name="ChapterNumber" id="ChapterNumber" required>
+
+        <label for="Title">Tiêu đề chương:</label>
+        <input type="text" name="Title" id="Title" required>
+
+        <label for="Content">Nội dung chương:</label>
+        <textarea name="Content" id="Content" rows="10" required></textarea>
+
+        <button type="submit">📚 Lưu chương</button>
+    </form>
+</main>
+
+<style>
+    main {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    button {
+        background: #28a745;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #218838;
+    }
+</style>

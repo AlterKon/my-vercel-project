@@ -1,0 +1,279 @@
+<style>
+    .novel-detail {
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .novel-header {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+    
+    .novel-header img {
+        width: 200px;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+    
+    .novel-info h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+    
+    .genre {
+        display: inline-block;
+        background: #f8d7da;
+        color: #721c24;
+        padding: 3px 8px;
+        border-radius: 5px;
+        margin: 2px;
+        font-size: 14px;
+    }
+    
+    .novel-description h2 {
+        margin-top: 20px;
+        font-size: 20px;
+    }
+    
+    .novel-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-read, .btn-save {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .btn-read {
+        background: #007bff;
+        color: white;
+    }
+    
+    .btn-save {
+        background: #28a745;
+        color: white;
+    }
+    
+    .chapter-list ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    
+    .chapter-list li {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .chapter-list a {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+    }
+    
+    .chapter-list a:hover {
+        color: #0056b3;
+    }
+    
+    p,h1, h2{
+        color: #000;
+    }
+    
+    .modal {
+        display: none; /* Quan trọng: Ẩn modal khi vào trang */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    /* Nội dung modal */
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        width: 300px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Nút đóng */
+    .close {
+        float: right;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    
+    /* Nút trong modal */
+    .modal-buttons {
+        margin-top: 10px;
+    }
+    
+    .modal-buttons button {
+        padding: 8px 15px;
+        margin: 5px;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .modal-buttons button:first-child {
+        background: #ff4d4d;
+        color: white;
+    }
+    
+    .modal-buttons button:last-child {
+        background: #ccc;
+    }
+    </style>
+    
+    <main>
+        <div class="novel-detail">
+            <div class="novel-header">
+                <img src="<%= novel.CoverImage %>" alt="<%= novel.Title %>">
+                <div class="novel-info">
+                    <h1><%= novel.Title %></h1>
+                    <p><strong>Tác giả:</strong> <%= novel.AuthorName || 'Không rõ' %></p>
+                    <p><strong>Thể loại:</strong> 
+                        <% if (genres.length > 0) { %>
+                            <% genres.forEach((genre, index) => { %>
+                                <a href="/genres/<%= genre.GenreID %>"><span class="genre" ><%= genre.GenreName %></span></a>
+                                <%= index < genres.length - 1 ? ', ' : '' %>
+                            <% }) %>
+                        <% } else { %>
+                            Chưa có thể loại
+                        <% } %>
+                    </p>
+                    <p><strong>Trạng thái:</strong> <%= novel.Status === 'ongoing' ? 'Đang cập nhật' : 'Hoàn thành' %></p>
+                    <p><strong>Lượt đọc:</strong> <%= novel.Views %></p>
+                    <p><strong>Cập nhật:</strong> <%= new Date(novel.UpdatedAt).toLocaleDateString() %></p>
+                </div>
+            </div>
+        
+            <div class="novel-description">
+                <h2>Mô tả</h2>
+                <p><%= novel.Description %></p>
+            </div>
+        
+            <div class="novel-actions">
+                <a href="/user/read/<%= novel.NovelID %>/chapter/1" class="btn-read">Đọc ngay</a>
+                <button class="btn-save" onclick="saveNovel(<%= novel.NovelID %>)">Lưu vào thư viện</button>
+                <button class="btn-report" onclick="openReportModal(<%= novel.NovelID %>)">Báo cáo</button>
+            </div>
+    
+            <div id="reportModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeReportModal()">&times;</span>
+                    <h2>Báo cáo nội dung</h2>
+                    <input type="hidden" id="novelID">
+                    <label for="reportReason">Lý do:</label>
+                    <textarea id="reportReason"></textarea>
+                    <div class="modal-buttons">
+                        <button onclick="submitReport()">Gửi báo cáo</button>
+                        <button onclick="closeReportModal()">Hủy</button> <!-- Nút hủy -->
+                    </div>
+                </div>
+            </div>
+        
+            <div class="chapter-list">
+                <h2>Danh sách chương</h2>
+                <ul>
+                    <% if (chapters.length > 0) { %>
+                        <% chapters.forEach(chapter => { %>
+                            <li><a href="/user/read/<%= novel.NovelID %>/chapter/<%= chapter.ChapterNumber %>">
+                                Chương <%= chapter.ChapterNumber %>: <%= chapter.Title %>
+                                <% if (isAuthor) { %>
+                                    <button>
+                                        <a href="/user/novels/<%= novel.NovelID %>/update/<%= chapter.ChapterNumber %>">Chỉnh sửa</a>
+                                    </button>
+                                <% } %>
+                            </a></li>
+                        <% }) %>
+                    <% } else { %>
+                        <p>Chưa có chương nào.</p>
+                    <% } %>
+                    <li>
+                        <a href="/user/novels/<%= novel.NovelID %>/add-chapter" class="add-chapter-btn">➕ Thêm chương</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        function saveNovel(novelID) {
+            fetch(`/user/novels/${novelID}/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'  // 🔹 QUAN TRỌNG: Đảm bảo gửi cookie phiên!
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Đã lưu vào thư viện!");
+                    window.location.reload();
+                } else {
+                    alert("Lỗi: " + data.error);
+                    if (data.error.includes("Hãy mua thêm gói")) {
+                        window.location.href = "/user/profile"; // Điều hướng mua gói
+                    }
+                }
+            }).catch(error => console.error("Lỗi:", error));
+        }
+    
+    // Mở modal báo cáo
+    function openReportModal(novelID) {
+        document.getElementById("novelID").value = novelID;
+        document.getElementById("reportModal").style.display = "flex";
+    }
+    
+    // Đóng modal báo cáo
+    function closeReportModal() {
+        document.getElementById("reportModal").style.display = "none";
+    }
+    
+    // Gửi báo cáo lên server
+    function submitReport() {
+        const novelID = document.getElementById("novelID").value;
+        const reason = document.getElementById("reportReason").value.trim();
+    
+        if (!reason) {
+            alert("Vui lòng nhập lý do báo cáo.");
+            return;
+        }
+    
+        fetch(`/user/novels/${novelID}/report`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include", // Gửi cookie session
+            body: JSON.stringify({ reason })
+        })
+    
+        .then(response => {
+            if (!response.ok) throw new Error(`Lỗi HTTP: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            alert(data.message);
+            closeReportModal();
+        })
+        .catch(error => {
+            console.error("Lỗi khi gửi báo cáo:", error);
+            alert("Không thể gửi báo cáo!");
+        });
+    }
+    
+    </script>    

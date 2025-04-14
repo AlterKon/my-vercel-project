@@ -1,0 +1,210 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="topnav">
+        <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a class="active" href="/Admin/Users">Tài khoản</a>
+        <a href="/Admin/Novels">Tiểu thuyết</a>
+        <a href="/Admin/Genres">Thể loại</a>
+        <a href="/Admin/Transactions">Giao dịch</a>
+        <a href="/Admin/Discussions">Bài thảo luận</a>
+        <a href="/Admin/Reports">Báo cáo</a>
+        <a href="/Admin/SubscriptionPlans">Gói đọc</a>
+        <div class="user-menu">
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <% if (currentUser.role === 'admin') { %>
+                    <a href="/Admin/Users">Quản lý</a>
+                <% } %>
+                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/logout">Đăng xuất</a>
+            <% } else { %>
+                <a href="/login">Đăng nhập</a>
+                <a href="/register">Đăng ký</a>
+            <% } %>
+        </div> 
+    </div>
+    <div class="table-container">
+        <div class="title">Danh sách tài khoản</div>
+        <!-- 🔍 Thanh tìm kiếm -->
+        <input type="text" id="searchInput" placeholder="Tìm kiếm theo tài khoản..." value="<%= searchQuery || '' %>">
+        <button onclick="searchUsers()">Tìm</button>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Phân quyền</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <button onclick="openFormAdd()">Thêm Người Dùng</button>
+            <div id="userFormAdd" class="overlay" style="display: none;">
+                <div class="popup">
+                    <form action="/Admin/create-user" method="post">
+                        <fieldset>
+                            <legend>Thêm Người Dùng</legend>
+                            <div class="input-group">
+                                <label>Email:</label>
+                                <input type="text" name="email">
+                            </div>
+                            <div class="input-group">
+                                <label>Tài khoản:</label>
+                                <input type="text" name="username">
+                            </div>
+                            <div class="input-group">
+                                <label>Mật khẩu:</label>
+                                <input type="text" name="password">
+                            </div>
+                            <div>
+                                <button type="submit">Lưu</button>
+                                <button type="button" onclick="closeFormAdd()">Đóng</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <tbody id="userTableBody">
+                <% listUsers.forEach(user => { %>
+                    <tr>
+                        <td><%= user.UserID %></td>
+                        <td><%= user.Username %></td>
+                        <td><%= user.Email %></td>
+                        <td><%= user.Role %></td>
+                        <td><%= user.Status %></td>
+                        <td><%= user.CreatedAt %></td>
+                        <td>
+                            <button onclick="openFormUpdate(<%= user.UserID %>, '<%= user.Email %>', '<%= user.Username %>')">Sửa</button>
+                            <button onclick="deleteUser(<%= user.UserID %>)">Xóa</button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+            <!-- Form Sửa Người Dùng (Ẩn mặc định) -->
+<div id="userFormUpdate" class="overlay" style="display: none;">
+    <div class="popup">
+        <form action="/Admin/update-user" method="post">
+            <fieldset>
+                <legend>Sửa thông tin người Dùng</legend>
+
+                <!-- ID (Ẩn đi) -->
+                <input type="hidden" name="userID" id="updateUserID">
+
+                <div class="input-group">
+                    <label>Email:</label>
+                    <input type="text" name="email" id="updateEmail">
+                </div>
+                <div class="input-group">
+                    <label>Tài khoản:</label>
+                    <input type="text" name="username" id="updateUsername">
+                </div>
+                <div class="input-group">
+                    <label>Phân quyền:</label>
+                    <select name="role" id="updateRole">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Trạng thái:</label>
+                    <select name="status" id="updateStatus">
+                        <option value="active">Active</option>
+                        <option value="banned">Banned</option>
+                    </select>
+                </div>
+                <div>
+                    <button type="submit">Lưu</button>
+                    <button type="button" onclick="closeFormUpdate()">Đóng</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+        </table>
+    </div>
+    <script>
+        function deleteUser(userID) {
+    if (!confirm("Bạn có chắc muốn xóa tài khoản này?")) return;
+
+    console.log("Gửi request xóa userID:", userID); // Debug
+
+    fetch('http://localhost:8081/Admin/delete-user', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userID }) // Gửi đúng userID
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message); // Hiển thị thông báo
+        if (data.success) {
+            location.reload();
+        }
+    })
+    .catch(error => {
+        console.error("Lỗi:", error);
+        alert("Có lỗi xảy ra, vui lòng thử lại!");
+    });
+}
+
+function openFormAdd() {
+    document.getElementById("userFormAdd").style.display = "flex";
+}
+
+function closeFormAdd() {
+    document.getElementById("userFormAdd").style.display = "none";
+}
+
+function openFormUpdate(userID, email, username) {
+    document.getElementById("updateUserID").value = userID;
+    document.getElementById("updateEmail").value = email;
+    document.getElementById("updateUsername").value = username;
+    document.getElementById("userFormUpdate").style.display = "flex";
+}
+
+function closeFormUpdate() {
+    document.getElementById("userFormUpdate").style.display = "none";
+}
+
+function searchUsers() {
+    const searchValue = document.getElementById("searchInput").value;
+
+    fetch(`/Admin/search-users?query=${encodeURIComponent(searchValue)}`, {
+        headers: { "Accept": "application/json" }
+    })
+    .then(response => response.json()) // Chỉ nhận JSON, tránh lỗi HTML
+    .then(data => {
+        const tableBody = document.getElementById("userTableBody");
+        tableBody.innerHTML = ""; // Xóa danh sách cũ
+
+        data.forEach(user => {
+            const row = `
+                <tr>
+                    <td>${user.UserID}</td>
+                    <td>${user.Username}</td>
+                    <td>${user.Email}</td>
+                    <td>${user.Role}</td>
+                    <td>${user.Status}</td>
+                    <td>${user.CreatedAt}</td>
+                    <td>
+                        <button onclick="openFormUpdate(${user.UserID}, '${user.Email}', '${user.Username}')">Sửa</button>
+                        <button onclick="deleteUser(${user.UserID})">Xóa</button>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    })
+    .catch(error => console.error("Lỗi tìm kiếm:", error));
+}
+
+        </script>
+</body>
+</html>

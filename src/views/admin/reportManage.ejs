@@ -1,0 +1,108 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Manage</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="topnav">
+        <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Users">Tài khoản</a>
+        <a href="/Admin/Novels">Tiểu thuyết</a>
+        <a href="/Admin/Genres">Thể loại</a>
+        <a href="/Admin/Transactions">Giao dịch</a>
+        <a href="/Admin/Discussions">Bài thảo luận</a>
+        <a class="active" href="/Admin/Reports">Báo cáo</a>
+        <a href="/Admin/SubscriptionPlans">Gói đọc</a>
+        <div class="user-menu">
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <% if (currentUser.role === 'admin') { %>
+                    <a href="/Admin/Users">Quản lý</a>
+                <% } %>
+                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/logout">Đăng xuất</a>
+            <% } else { %>
+                <a href="/login">Đăng nhập</a>
+                <a href="/register">Đăng ký</a>
+            <% } %>
+        </div> 
+    </div>
+    <div class="table-container">
+        <div class="title">Quản lý báo cáo Tiểu thuyết</div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Người báo cáo</th>
+                <th>Lý do</th>
+                <th>Tiểu thuyết</th>
+                <th>Trạng thái</th>
+                <th>Thời gian</th>
+                <th>Hành động</th>
+            </tr>
+            <tbody id="novelReportTableBody">
+                <% reports.forEach(report => { %>
+                    <tr>
+                        <td><%= report.ReportID %></td>
+                        <td><%= report.Reporter || "Không xác định" %></td>
+                        <td><%= report.Reason %></td>
+                        <td><%= report.NovelTitle || "N/A" %></td>
+                        <td><%= report.Status %></td>
+                        <td><%= new Date(report.CreatedAt).toLocaleString() %></td>
+                        <td>
+                            <button onclick="resolveReport('<%= report.ReportID %>', 'novel')">Xác nhận</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="table-container">
+        <div class="title">Quản lý báo cáo Thảo luận</div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Người báo cáo</th>
+                <th>Lý do</th>
+                <th>Bài thảo luận</th>
+                <th>Trạng thái</th>
+                <th>Thời gian</th>
+                <th>Hành động</th>
+            </tr>
+            <tbody id="discussionReportTableBody">
+                <% DiscussionReports.forEach(report => { %>
+                    <tr>
+                        <td><%= report.ReportID %></td>
+                        <td><%= report.Reporter || "Không xác định" %></td>
+                        <td><%= report.Reason %></td>
+                        <td><%= report.DiscussionTitle || "N/A" %></td>
+                        <td><%= report.Status %></td>
+                        <td><%= new Date(report.CreatedAt).toLocaleString() %></td>
+                        <td>
+                            <button onclick="resolveReport('<%= report.ReportID %>', 'discussion')">Xác nhận</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        async function resolveReport(ReportID, type) {
+        const confirmAction = confirm("Bạn có chắc chắn muốn xác nhận báo cáo này?");
+        if (!confirmAction) return;
+
+        const response = await fetch(`/Admin/resolve-report/${ReportID}?type=${type}`, { method: "POST",headers: { "Content-Type": "application/json" },
+        credentials: "include" });
+        const data = await response.json();
+        
+        if (data.success) {
+            alert("Báo cáo đã được giải quyết!");
+            location.reload(); // Cập nhật lại danh sách
+        } else {
+            alert("Lỗi: " + data.message);
+        }
+    }
+    </script>
+</body>
+</html>

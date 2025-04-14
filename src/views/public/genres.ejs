@@ -1,0 +1,38 @@
+<main>
+    <h2>Danh sách Thể loại</h2>
+<div class="genres-list">
+    <% genres.forEach(genre => { %>
+        <div class="genre-card">
+            <h3>
+                <a href="/genres/<%= genre.GenreID %>">
+                    <%= genre.GenreName %>
+                </a>
+            </h3>
+        </div>
+    <% }) %>
+</div>
+</main>
+
+<style>
+    .genres-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    .genre-card {
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        text-align: center;
+        transition: 0.3s;
+        background: #f9f9f9;
+    }
+    .genre-card:hover {
+        background: #e0e0e0;
+    }
+    .genre-card a {
+        text-decoration: none;
+        font-weight: bold;
+        color: #333;
+    }
+</style>

@@ -1,0 +1,267 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="topnav">
+        <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Users">Tài khoản</a>
+        <a class="active" href="/Admin/Novels">Tiểu thuyết</a>
+        <a href="/Admin/Genres">Thể loại</a>
+        <a href="/Admin/Transactions">Giao dịch</a>
+        <a href="/Admin/Discussions">Bài thảo luận</a>
+        <a href="/Admin/Reports">Báo cáo</a>
+        <a href="/Admin/SubscriptionPlans">Gói đọc</a>
+        <div class="user-menu">
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <% if (currentUser.role === 'admin') { %>
+                    <a href="/Admin/Users">Quản lý</a>
+                <% } %>
+                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/logout">Đăng xuất</a>
+            <% } else { %>
+                <a href="/login">Đăng nhập</a>
+                <a href="/register">Đăng ký</a>
+            <% } %>
+        </div> 
+    </div>
+    <div class="table-container">
+        <div class="title">Danh sách tiểu thuyết</div>
+
+        <input type="text" id="searchTitle" placeholder="Tìm theo tiêu đề..." value="<%= title || '' %>">
+
+        <select id="searchAuthor" name="author">
+            <option value="">-- Chọn tác giả --</option>
+            <% authors.forEach(authorItem => { %>
+                <option value="<%= authorItem.UserID %>" <%= authorItem.UserID == author ? "selected" : "" %>>
+                    <%= authorItem.Username %>
+                </option>
+            <% }); %>
+        </select>
+        
+        <select id="searchGenre" name="genre">
+            <option value="">-- Chọn thể loại --</option>
+            <% genres.forEach(genreItem => { %>
+                <option value="<%= genreItem.GenreID %>" <%= genreItem.GenreID == genre ? "selected" : "" %>>
+                    <%= genreItem.GenreName %>
+                </option>
+            <% }); %>
+        </select>
+        
+        <button onclick="searchNovels()">Tìm</button>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Thể loại</th>
+                <th>Tác giả</th>
+                <th>Trạng thái</th>
+                <th>Chương</th>
+                <th>Lượt đọc</th>
+                <th>Khóa</th>
+                <th>Hành động</th>
+            </tr>
+            <tbody id="novelTableBody">
+            <% novels.forEach(novel => { %>
+            <tr>
+                <td><%= novel.NovelID %></td>
+                <td><%= novel.Title %></td>
+                <td><%= novel.Genres ? [...new Set(novel.Genres.split(",").map(g => g.trim()))].join(", ") : 'Chưa có thể loại' %></td>
+                <td><%= novel.AuthorName %></td>
+                <td><%= novel.Status %></td>
+                <td><%= novel.ChapterCount %></td>
+                <td><%= novel.Views %></td>
+                <td>
+                    <button onclick="toggleLock(<%= novel.NovelID %>, <%= novel.Locked ? 'false' : 'true' %>)">
+                        <%= novel.Locked ? '🔒 Mở' : '🔓 Khóa' %>
+                    </button>
+                </td>
+                <td>
+                    <button onclick="openEditForm(<%= novel.NovelID %>)">Sửa</button>
+                    <button onclick="deleteNovel(<%= novel.NovelID %>)">Xóa</button>
+                </td>
+            </tr>
+            <% }); %>
+        </tbody>
+        </table>
+        <div id="editForm" class="overlay" style="display: none;">
+            <div class="popup">
+                <form id="updateNovelForm">
+                    <input type="hidden" id="editNovelID">
+                    <label>Tên:</label> <input type="text" id="editTitle"><br>
+                    <label>Mô tả:</label> <textarea id="editDescription"></textarea><br>
+                    <label>Ảnh bìa:</label> <input type="text" id="editCoverImage"><br>
+                    <label>Tác giả:</label>
+                    <select id="editAuthorID">
+                        <% authors.forEach(author => { %>
+                            <option value="<%= author.UserID %>"><%= author.Username %></option>
+                        <% }); %>
+                    </select><br>   
+                    <label>Thể loại:</label>
+                    <div id="editGenresContainer">
+                        <% genres.forEach(genre => { %>
+                            <label>
+                                <input type="checkbox" class="editGenreCheckbox" value="<%= genre.GenreID %>">
+                                <%= genre.GenreName %>
+                            </label>
+                        <% }); %>
+                    </div>
+                    <label>Trạng thái:</label>
+                    <select id="editStatus">
+                        <option value="ongoing">Đang tiến hành</option>
+                        <option value="completed">Hoàn thành</option>
+                    </select><br>
+                    <button type="submit">Lưu</button>      
+                    <button type="button" onclick="closeEditForm()">Hủy</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        var novels = <%- JSON.stringify(novels) %>;
+        var genres = <%- JSON.stringify(genres) %>;
+
+function openEditForm(novelID) {
+    const novel = novels.find(n => n.NovelID == novelID);
+    if (!novel) {
+        alert("Không tìm thấy tiểu thuyết!");
+        return;
+    }
+
+    document.getElementById("editNovelID").value = novel.NovelID;
+    document.getElementById("editTitle").value = novel.Title;
+    document.getElementById("editDescription").value = novel.Description;
+    document.getElementById("editCoverImage").value = novel.CoverImage;
+    document.getElementById("editAuthorID").value = novel.AuthorID;
+    document.getElementById("editStatus").value = novel.Status;
+
+    // Đánh dấu thể loại đã chọn
+    let selectedGenres = Array.isArray(novel.GenreIDs) ? novel.GenreIDs.map(id => id.toString()) : [];
+    document.querySelectorAll(".editGenreCheckbox").forEach(checkbox => {
+        checkbox.checked = selectedGenres.includes(checkbox.value);
+    });
+
+
+    document.getElementById("editForm").style.display = "flex";
+}
+
+// Đóng form chỉnh sửa
+function closeEditForm() {
+    document.getElementById("editForm").style.display = "none";
+}
+
+// Gửi request cập nhật
+document.getElementById("updateNovelForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const novelID = document.getElementById("editNovelID").value;
+    const title = document.getElementById("editTitle").value;
+    const description = document.getElementById("editDescription").value;
+    const coverImage = document.getElementById("editCoverImage").value;
+    const authorID = document.getElementById("editAuthorID").value;
+    const status = document.getElementById("editStatus").value;
+
+    // Lấy danh sách các thể loại đã chọn
+    const genres = Array.from(document.querySelectorAll(".editGenreCheckbox:checked"))
+                    .map(checkbox => parseInt(checkbox.value, 10))
+                    .filter(id => !isNaN(id)); // Chuyển thành số nguyên, loại bỏ giá trị không hợp lệ
+
+    // Kiểm tra dữ liệu trước khi gửi đi
+    console.log("Dữ liệu gửi lên:", { novelID, title, description, coverImage, authorID, status, genres });
+
+    fetch("/Admin/Novels/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ novelID, title, description, coverImage, authorID, status, genres })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) location.reload();
+    })
+    .catch(error => {
+        console.error("Lỗi khi cập nhật tiểu thuyết:", error);
+        alert("Lỗi khi cập nhật tiểu thuyết!");
+    });
+});
+
+
+// Khóa/Mở khóa tiểu thuyết
+function toggleLock(novelID, locked) {
+    fetch("/Admin/Novels/lock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ novelID, locked })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) location.reload();
+    })
+    .catch(error => alert("Lỗi khi cập nhật trạng thái khóa!"));
+}
+
+function searchNovels() {
+    const title = document.getElementById("searchTitle").value;
+    const authorID = document.getElementById("searchAuthor").value;
+    const genreID = document.getElementById("searchGenre").value;
+
+    fetch(`/Admin/search-novels?title=${encodeURIComponent(title)}&author=${encodeURIComponent(authorID)}&genre=${encodeURIComponent(genreID)}`, {
+        headers: { "Accept": "application/json" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const tableBody = document.getElementById("novelTableBody");
+        tableBody.innerHTML = ""; // Xóa danh sách cũ
+
+        data.forEach(novel => {
+            const row = `
+                <tr>
+                    <td>${novel.NovelID}</td>
+                    <td>${novel.Title}</td>
+                    <td>${novel.Genres || "Không có"}</td>
+                    <td>${novel.AuthorName}</td>
+                    <td>${novel.Status}</td>
+                    <td>${novel.Views}</td>
+                    <td>${novel.ChapterCount}</td>
+                    <td>
+                        <button onclick="toggleLock(${novel.NovelID}, ${novel.Locked ? 'false' : 'true'})">
+                            ${novel.Locked ? '🔒 Khóa' : '🔓 Mở'}
+                        </button>
+                    </td>
+                    <td>
+                        <button onclick="openEditForm(${novel.NovelID})">Sửa</button>
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    })
+    .catch(error => console.error("Lỗi tìm kiếm:", error));
+}
+
+function deleteNovel(NovelID) {
+            if (!confirm("Bạn có chắc muốn xóa tiểu thuyết này?")) return;
+
+            fetch('/admin/delete-novel', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ NovelID })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi:", error);
+                alert("Có lỗi xảy ra, vui lòng thử lại!");
+            });
+        }
+    </script>
+</body>
+</html>

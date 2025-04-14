@@ -1,0 +1,297 @@
+<main>
+    <h2>Hồ sơ của <%= user.Username %></h2>
+<p>Email: <%= user.Email %></p>
+<p>Vai trò: <%= user.Role === 'admin' ? 'Quản trị viên' : 'Người dùng' %></p>
+<p>Trạng thái: <%= user.Status === 'active' ? 'Hoạt động' : 'Bị cấm' %></p>
+<p>Tham gia vào: <%= new Date(user.CreatedAt).toLocaleDateString() %></p>
+
+<h3>Đổi Mật Khẩu</h3>
+<form id="changePasswordForm">
+    <input type="hidden" id="userID" value="<%= user.UserID %>">
+    <label for="currentPassword">Mật khẩu hiện tại:</label>
+    <input type="password" id="currentPassword">
+    <label for="newPassword">Mật khẩu mới:</label>
+    <input type="password" id="newPassword">
+    <button type="submit">Xác nhận</button>
+</form>
+<h3>📚 Tiểu thuyết đã sở hữu (<%= totalOwned %> / <%= totalCanOwn %>)
+    <button id="add-novel-btn">➕ Thêm</button>
+</h3>
+
+<div class="novel-list">
+    <% if (ownedNovels.length > 0) { %>
+        <% ownedNovels.forEach(novel => { %>
+            <div class="novel-card">
+                <img src="<%= novel.CoverImage %>" alt="<%= novel.Title %>">
+                <h3><a href="/novels/<%= novel.NovelID %>"><%= novel.Title %></a></h3>
+                <p>Đã mua vào: <%= new Date(novel.PurchasedAt).toLocaleDateString() %></p>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>Người dùng chưa sở hữu tiểu thuyết nào.</p>
+    <% } %>
+</div>
+
+<h3>📖 Tiểu thuyết đã đăng tải (<%= uploadedNovels.length %>)
+    <button id="upload-novel-btn" class="upload-btn">
+        ➕ Đăng Tiểu Thuyết
+    </button>
+</h3>
+
+<div class="novel-list">
+    <% if (uploadedNovels.length > 0) { %>
+        <% uploadedNovels.forEach(novel => { %>
+            <div class="novel-card">
+                <img src="<%= novel.CoverImage %>" alt="<%= novel.Title %>">
+                <h3><a href="/novels/<%= novel.NovelID %>"><%= novel.Title %></a></h3>
+                <p>Đăng tải vào: <%= new Date(novel.CreatedAt).toLocaleDateString() %></p>
+                <a href="/user/novels/<%= novel.NovelID %>/add-chapter" class="add-chapter-btn">➕ Thêm chương</a>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>Bạn chưa đăng tải tiểu thuyết nào.</p>
+    <% } %>
+</div>
+
+<div class="bookmark-list">
+    <h1>Danh sách chương đã đánh dấu</h1>
+    <ul>
+        <% if (bookmarks.length > 0) { %>
+        <% bookmarks.forEach(bookmark => { %>
+            <li>
+                <a href="/user/read/<%= bookmark.NovelID %>/chapter/<%= bookmark.ChapterNumber %>">
+                    <%= bookmark.NovelTitle %> - Chương <%= bookmark.ChapterNumber %>
+                </a>
+            </li>
+        <% }) %>
+        <% } else { %>
+            <p>Bạn chưa đánh dấu tiểu thuyết nào.</p>
+        <% } %>
+    </ul>
+</div>
+
+<h1>Lịch sử giao dịch</h1>
+<table>
+    <tr>
+        <th>Tên Gói</th>
+        <th>Số Tiền</th>
+        <th>Trạng Thái</th>
+        <th>Ngày Thực Hiện</th>
+    </tr>
+    <div id="transaction-history">
+        <% transactions.forEach(transaction => { %>
+            <tr>
+                <td><%= transaction.UserName %></td>
+                <td><%= transaction.PlanName %></td>
+                <td><%= transaction.Amount.toLocaleString() %> VND</td>
+                <td><%= transaction.Status %></td>
+                <td><%= transaction.CreatedAt %></td>
+            </tr>
+        <% }) %>
+    </div>
+</table>
+
+<h1>Thu nhập:</h1>
+<% if (uploadedNovels.length > 0) { %>
+    <h3>Thu nhập của bạn: <%= authorIncome.toLocaleString() %> VND</h3>
+<% } %>
+
+<% availablePlans.forEach(plan => { %>
+    <tr>
+        <td><%= plan.PlanName %></td>
+        <td><%= plan.Price %> VND</td>
+        <td><%= plan.MaxNovels %></td>
+        <td>
+            <form id="form-<%= plan.PlanID %>" enctype="multipart/form-data" onsubmit="submitPlanForm(event, <%= plan.PlanID %>)">
+                <select name="paymentMethod">
+                    <option value="momo">Momo</option>
+                    <option value="bank">Chuyển khoản ngân hàng</option>
+                </select>
+                <input type="file" name="proofImage" accept="image/*" required>
+                <input type="hidden" name="planId" value="<%= plan.PlanID %>">
+                <button type="submit">Mua</button>
+            </form>
+        </td>
+    </tr>
+<% }) %>
+
+
+<div id="qr-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close-qr">&times;</span>
+      <h3>🟣 Quét mã QR Momo để thanh toán</h3>
+      <img id="qr-image" src="" width="300" alt="QR Code Momo">
+      <p id="qr-transaction-id"></p>
+      <div><button onclick="closeQRModal()">Đóng</button></div>
+    </div>
+  </div>
+</main>
+
+<style>
+    .novel-list, .subscription-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+    .novel-card, .subscription-card {
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        text-align: center;
+        background: #f9f9f9;
+    }
+    .novel-card img {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+    }
+    .novel-card:hover, .subscription-card:hover {
+        background: #e0e0e0;
+    }
+    .upload-section {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .upload-btn {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+    }
+
+    .upload-btn:hover {
+        background: #0056b3;
+    }
+    .upload-btn {
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.upload-btn:hover {
+    background-color: #0056b3;
+}
+</style>
+
+<script>
+    document.getElementById("add-novel-btn").addEventListener("click", function () {
+        fetch('/user/check-novel-limit')
+            .then(response => response.json())
+            .then(data => {
+                if (data.remainingNovels > 0) {
+                    alert("Bạn có thể thêm tiểu thuyết!");
+                    window.location.href = "/novels";
+                } else {
+                    document.getElementById("subscription-modal").style.display = "block";
+                }
+            })
+            .catch(error => console.error(error));
+    });
+
+    document.querySelector(".close").addEventListener("click", function () {
+        document.getElementById("subscription-modal").style.display = "none";
+    });
+
+    function submitPlanForm(event, planId) {
+    event.preventDefault();
+    const form = document.getElementById(`form-${planId}`);
+    const formData = new FormData(form);
+
+    fetch('/user/buy-plan', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        if (data.success) location.reload();
+    })
+    .catch(err => console.error(err));
+}
+
+    function buyPlan(planId) {
+    const paymentMethod = document.getElementById(`payment-method-${planId}`).value;
+
+    fetch('/user/buy-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ planId, paymentMethod })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (paymentMethod === 'momo' && data.qrUrl) {
+                // Hiển thị mã QR
+                document.getElementById('qr-image').src = data.qrUrl;
+                document.getElementById('qr-transaction-id').innerText = `Mã giao dịch: ${data.transactionId}`;
+                document.getElementById('qr-modal').style.display = 'block';
+            } else {
+                alert(data.message || "Mua gói thành công!");
+                location.reload();
+            }
+        } else {
+            alert(data.message || "Có lỗi xảy ra!");
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Lỗi kết nối đến server!");
+    });
+}
+
+    document.getElementById("upload-novel-btn").addEventListener("click", function () {
+        window.location.href = "/user/upload";
+    });
+
+    document.getElementById("changePasswordForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
+    
+    const userID = document.getElementById("userID").value;
+    const currentPassword = document.getElementById("currentPassword").value;
+    const newPassword = document.getElementById("newPassword").value;
+
+    if (!currentPassword || !newPassword) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
+
+    const response = await fetch(`/user/profile/${userID}/change-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword })
+    });
+
+    const result = await response.json();
+    alert(result.message);
+    if (result.success) {
+        document.getElementById("currentPassword").value = "";
+        document.getElementById("newPassword").value = "";
+    }
+});
+
+function closeQRModal() {
+    document.getElementById('qr-modal').style.display = 'none';
+}
+
+document.querySelector('.close-qr').addEventListener('click', closeQRModal);
+
+function openPlanList() {
+    document.getElementById("subscription-modal").style.display = "flex";
+}
+
+function closePlanList() {
+    document.getElementById("subscription-modal").style.display = "none";
+}
+</script>

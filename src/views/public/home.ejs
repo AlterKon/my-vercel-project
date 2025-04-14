@@ -1,0 +1,153 @@
+<link rel="stylesheet" href="css/home.css">
+
+<main>
+    <div class="banner">
+        <div class="slider">
+            <div class="slide active">
+                <img src="/images/slider1.jpg" alt="Tiểu thuyết 1">
+                <div class="caption">Tiểu thuyết nổi bật 1</div>
+            </div>
+            <div class="slide">
+                <img src="/images/slider2.jpg" alt="Tiểu thuyết 2">
+                <div class="caption">Tiểu thuyết nổi bật 2</div>
+            </div>
+            <button class="prev" onclick="prevSlide()">&#10094;</button>
+            <button class="next" onclick="nextSlide()">&#10095;</button>
+        </div>
+    </div>
+    
+    <div class="content-wrapper">
+        <!-- Danh sách tiểu thuyết -->
+        <div class="novel-section">
+            <h2>Mới nhất</h2>
+            <div class="novel-container">
+                <div class="novel-list">
+                    <% latestNovels.forEach(novel => { %>
+                        <div class="novel-item">
+                            <img src="<%= novel.CoverImage %>" alt="<%= novel.Title %>">
+                            <a href="#" onclick="checkNovelLocked(event, <%= novel.NovelID %>, <%= novel.Locked %>)">
+                                <h3><%= novel.Title %></h3>
+                            </a>
+                        </div>
+                    <% }) %>
+                </div>
+                <button id="prevBtn">&#10094;</button>
+                <button id="nextBtn">&#10095;</button>
+            </div>
+        </div>
+    
+        <!-- Danh sách thảo luận -->
+        <div class="discussion-section">
+            <h2>Thảo luận mới</h2>
+            <div class="discussion-list">
+                <% latestDiscussions.forEach(discussion => { %>
+                    <div class="discussion-item">
+                        <h3><a href="/Discussions/<%= discussion.DiscussionID %>"><%= discussion.Title %></a></h3>
+                        <p><%= discussion.Author %> • <%= discussion.CreatedAt.toLocaleDateString() %></p>
+                        <p><%= discussion.Summary %></p>
+                    </div>
+                <% }) %>
+            </div>
+            <a href="/Discussions" class="view-more">Xem thêm...</a>
+        </div>
+    </div>
+    
+    <!-- Mục Phổ Biến -->
+    <div class="novel-section">
+        <h2>Phổ biến</h2>
+        <div class="novel-container">
+            <div class="all-novel-list">
+                <% popularNovels.forEach(novel => { %>
+                    <div class="novel-card">
+                        <img src="<%= novel.CoverImage %>" alt="<%= novel.Title %>">
+                        <a href="#" onclick="checkNovelLocked(event, <%= novel.NovelID %>, <%= novel.Locked %>)">
+                            <h3><%= novel.Title %></h3>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+
+    <div class="novel-section">
+        <h2>Danh sách tiểu thuyết</h2>
+        <div class="novel-container">
+            <div class="all-novel-list">
+                <% novels.forEach(novel => {%>
+                    <div class="novel-card">
+                        <img src="<%= novel.CoverImage %>" alt="<%= novel.Title %>">
+                        <a href="#" onclick="checkNovelLocked(event, <%= novel.NovelID %>, <%= novel.Locked %>)">
+                            <h3><%= novel.Title %></h3>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    function checkNovelLocked(event, novelId, locked) {
+        event.preventDefault(); 
+        console.log("Locked status:", locked);
+
+        if (locked) { // Nếu bị khóa
+            alert("Tiểu thuyết này đang bị khóa!");
+        } else {
+            window.location.href = "/novels/" + novelId;
+        }
+    }
+    // ---------------- SLIDER CHO BANNER ----------------
+    let sliderIndex = 0;
+    const slides = document.querySelectorAll(".slide");
+    const totalSlides = slides.length;
+
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.style.display = (i === index) ? "block" : "none";
+        });
+    }
+
+    function nextSlide() {
+        sliderIndex = (sliderIndex + 1) % totalSlides;
+        showSlide(sliderIndex);
+    }
+
+    function prevSlide() {
+        sliderIndex = (sliderIndex - 1 + totalSlides) % totalSlides;
+        showSlide(sliderIndex);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        showSlide(sliderIndex);
+    });
+
+    // ---------------- SLIDER CHO DANH SÁCH NOVEL ----------------
+    document.addEventListener("DOMContentLoaded", () => {
+    let novelIndex = 0;
+    const itemsPerPage = 4;
+    const novelList = document.querySelector(".novel-list");
+    const novelItems = document.querySelectorAll(".novel-item");
+    const totalItems = novelItems.length;
+
+    function updateNovelDisplay() {
+        let visibleNovels = [];
+        for (let i = 0; i < itemsPerPage; i++) {
+            visibleNovels.push(novelItems[(novelIndex + i) % totalItems].outerHTML);
+        }
+        novelList.innerHTML = visibleNovels.join(""); // Cập nhật nội dung
+    }
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+        novelIndex = (novelIndex + 1) % totalItems;
+        updateNovelDisplay();
+    });
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+        novelIndex = (novelIndex - 1 + totalItems) % totalItems;
+        updateNovelDisplay();
+    });
+
+    updateNovelDisplay(); // Hiển thị ban đầu
+});
+</script>

@@ -1,0 +1,38 @@
+<main>
+    <h1>Diễn đàn thảo luận</h1>
+    <a href="/Discussions/new" class="discussion-btn">➕ Tạo bài thảo luận</a>
+    <ul>
+        <% discussions.forEach(discussion => { %>
+            <li>
+                <h2><a href="/Discussions/<%= discussion.DiscussionID %>"><%= discussion.Title %></a></h2>
+                <p>Người đăng: <%= discussion.Username %> | <%= new Date(discussion.CreatedAt).toLocaleDateString() %></p>
+                <p><%= discussion.LikeCount %> ❤️ | <%= discussion.CommentCount %> 💬</p>
+            </li>
+        <% }) %>
+    </ul>
+</main>
+
+<style>
+    .discussion-btn {
+    display: inline-block;
+    background-color: #28a745; /* Màu xanh lá */
+    color: white;
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none; /* Bỏ gạch chân */
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.discussion-btn:hover {
+    background-color: #218838; /* Màu đậm hơn khi hover */
+    transform: scale(1.05); /* Hiệu ứng phóng to nhẹ */
+}
+</style>
+
+<script>
+    document.getElementById("create-discussion-btn").addEventListener("click", function () {
+        window.location.href = "/Discussions/new";
+    });
+</script>

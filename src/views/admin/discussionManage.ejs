@@ -1,0 +1,99 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { padding: 5px 10px; cursor: pointer; }
+        .resolved { background-color: #4CAF50; color: white; } /* Màu xanh cho xác nhận */
+        .deleted { background-color: #f44336; color: white; } /* Màu đỏ cho xóa */
+        .disabled { background-color: #ddd; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="topnav">
+        <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Users">Tài khoản</a>
+        <a href="/Admin/Novels">Tiểu thuyết</a>
+        <a href="/Admin/Genres">Thể loại</a>
+        <a href="/Admin/Transactions">Giao dịch</a>
+        <a class="active" href="/Admin/Discussions">Bài thảo luận</a>
+        <a href="/Admin/Reports">Báo cáo</a>
+        <a href="/Admin/SubscriptionPlans">Gói đọc</a>
+        <div class="user-menu">
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <% if (currentUser.role === 'admin') { %>
+                    <a href="/Admin/Users">Quản lý</a>
+                <% } %>
+                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/logout">Đăng xuất</a>
+            <% } else { %>
+                <a href="/login">Đăng nhập</a>
+                <a href="/register">Đăng ký</a>
+            <% } %>
+        </div> 
+    </div>
+    <div class="table-container">
+        <div class="title">Danh sách tiểu thuyết</div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Người tạo</th>
+                <th>Tiêu đề</th>
+                <th>Nội dung</th>
+                <th>Lượt thích</th>
+                <th>Bình luận</th>
+                <th>Hành động</th>
+            </tr>
+            <tbody>
+                <% discussions.forEach(discussion => { %>
+                    <tr id="discussion-<%= discussion.DiscussionID %>">
+                        <td><%= discussion.DiscussionID %></td>
+                        <td><%= discussion.UserName %></td>
+                        <td><%= discussion.Title %></td>
+                        <td><%= discussion.Content %></td>
+                        <td><%= discussion.LikeCount %></td>
+                        <td><%= discussion.CommentCount %></td>
+                        <td id="action-<%= discussion.DiscussionID %>">
+                            <button class="deleted" onclick="confirmAction(<%= discussion.DiscussionID %>, 'delete')">Xóa bài</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <script>
+        function confirmAction(discussionID, action) {
+            let actionText = action === 'resolve' ? 'xác nhận' : 'xóa';
+            if (!confirm(`Bạn có chắc muốn ${actionText} bài thảo luận này?`)) {
+                return;
+            }
+    
+            fetch(`/Admin/Discussions/${action}/${discussionID}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    // Xóa hoặc cập nhật dòng trong bảng
+                    if (action === 'delete') {
+                        document.getElementById(`discussion-${discussionID}`).remove();
+                    } else {
+                        document.getElementById(`status-${discussionID}`).innerText = "resolved";
+                        document.getElementById(`action-${discussionID}`).innerHTML = '<button class="disabled" disabled>Đã xử lý</button>';
+                    }
+                } else {
+                    alert("Lỗi: " + data.message);
+                }
+            })
+            .catch(error => console.error("Lỗi:", error));
+        }
+    </script>    
+</body>
+</html>

@@ -1,0 +1,59 @@
+<main>
+    <h2>Thể loại: <%= genre.GenreName %></h2>
+<p><%= genre.Description %></p>
+
+<h3>Danh sách tiểu thuyết:</h3>
+<div class="novel-list">
+    <% if (novels.length > 0) { %>
+        <% novels.forEach(novel => { %>
+            <div class="novel-card">
+                <img src="<%= novel.CoverImage %>" alt="<%= novel.Title %>">
+                <h3>
+                    <a href="#" onclick="checkNovelLocked(event, <%= novel.NovelID %>, <%= novel.Locked %>)">
+                        <h3><%= novel.Title %></h3>
+                    </a>
+                </h3>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>Không có tiểu thuyết nào trong thể loại này.</p>
+    <% } %>
+</div>
+</main>
+
+<style>
+    .novel-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    .novel-card {
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        text-align: center;
+        transition: 0.3s;
+        background: #f9f9f9;
+    }
+    .novel-card img {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+    }
+    .novel-card:hover {
+        background: #e0e0e0;
+    }
+</style>
+
+<script>
+    function checkNovelLocked(event, novelId, locked) {
+        event.preventDefault(); 
+        console.log("Locked status:", locked);
+
+        if (locked) { // Nếu bị khóa
+            alert("Tiểu thuyết này đang bị khóa!");
+        } else {
+            window.location.href = "/novels/" + novelId;
+        }
+    }
+</script>

@@ -1,0 +1,96 @@
+<div class="upload-container">
+    <h2 style="color: black;">Đăng tải Tiểu Thuyết</h2>
+    <form action="/user/upload" method="POST" enctype="multipart/form-data">
+        <!-- Tiêu đề -->
+        <label for="title" style="color: black;">Tiêu đề:</label>
+        <input type="text" id="title" name="title" required>
+
+        <!-- Mô tả -->
+        <label for="description" style="color: black;">Mô tả:</label>
+        <textarea id="description" name="description" rows="4"></textarea>
+
+        <!-- Ảnh bìa -->
+        <label for="coverImage" style="color: black;">Ảnh bìa:</label>
+        <input type="file" id="coverImage" name="coverImage" accept="image/*" required>
+
+        <!-- Chọn thể loại -->
+        <label for="genres" style="color: black;">Thể loại:</label>
+        <div id="genres">
+            <% genres.forEach(genre => { %>
+                <label class="genre-label">
+                    <input type="checkbox" name="genres" value="<%= genre.GenreID %>">
+                    <span class="genre-name"><%= genre.GenreName %></span>
+                </label>
+            <% }) %>
+        </div>
+
+        <!-- Trạng thái -->
+        <label for="status" style="color: black;">Trạng thái:</label>
+        <select id="status" name="status">
+            <option value="ongoing">Đang tiến hành</option>
+            <option value="completed">Hoàn thành</option>
+        </select>
+
+        <!-- Nút gửi -->
+        <button type="submit">Đăng tải</button>
+    </form>
+</div>
+
+<style>
+    .upload-container {
+        width: 50%;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background: #f9f9f9;
+    }
+    input, textarea, select {
+        width: 100%;
+        margin: 5px 0;
+        padding: 8px;
+    }
+    button {
+        padding: 10px;
+        background: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    #genres {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Khoảng cách giữa các mục */
+}
+
+.genre-label {
+    display: flex;
+    align-items: center;
+    gap: 0; /* Khoảng cách giữa checkbox và chữ */
+    font-size: 16px;
+}
+
+.genre-name {
+    color: black; /* Đảm bảo chữ màu đen */
+}
+</style>
+
+<script>
+    document.getElementById("novelForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = {
+            Title: document.getElementById("Title").value,
+            CoverImage: document.getElementById("CoverImage").value
+        };
+
+        const response = await fetch('/user/novels/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        document.getElementById("message").textContent = data.message;
+    });
+</script>

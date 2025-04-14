@@ -1,0 +1,91 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        button { padding: 5px 10px; cursor: pointer; }
+        .completed { background-color: #4CAF50; color: white; } /* Màu xanh cho xác nhận */
+        .failed { background-color: #f44336; color: white; } /* Màu đỏ cho hủy */
+        .disabled { background-color: #ddd; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <div class="topnav">
+        <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Users">Tài khoản</a>
+        <a href="/Admin/Novels">Tiểu thuyết</a>
+        <a href="/Admin/Genres">Thể loại</a>
+        <a class="active" href="/Admin/Transactions">Giao dịch</a>
+        <a href="/Admin/Discussions">Bài thảo luận</a>
+        <a href="/Admin/Reports">Báo cáo</a>
+        <a href="/Admin/SubscriptionPlans">Gói đọc</a>
+        <div class="user-menu">
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <% if (currentUser.role === 'admin') { %>
+                    <a href="/Admin/Users">Quản lý</a>
+                <% } %>
+                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/logout">Đăng xuất</a>
+            <% } else { %>
+                <a href="/login">Đăng nhập</a>
+                <a href="/register">Đăng ký</a>
+            <% } %>
+        </div> 
+    </div>
+    <div class="table-container">
+        <div class="title">Quản lý giao dịch</div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Người dùng</th>
+                <th>Gói đọc</th>
+                <th>Số tiền</th>
+                <th>Phương thức</th>
+                <th>Trạng thái</th>
+                <th>Ảnh</th>
+                <th>Hành động</th>
+            </tr>
+            <tbody>
+                <% transactions.forEach(transaction => { %>
+                    <tr>
+                        <td><%= transaction.TransactionID %></td>
+                        <td><%= transaction.UserName %></td>
+                        <td><%= transaction.PlanName %></td>
+                        <td><%= transaction.Amount.toLocaleString() %> VND</td>
+                        <td><%= transaction.PaymentMethod %></td>
+                        <td><%= transaction.Status %></td>
+                        <td>
+                            <% if (transaction.ProofImage) { %>
+                                <a href="/images/transaction/<%= transaction.ProofImage %>" target="_blank">
+                                    <img src="/images/transaction/<%= transaction.ProofImage %>" alt="Ảnh giao dịch" width="80">
+                                </a>
+                            <% } else { %>
+                                <span>Không có ảnh</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (transaction.Status === 'pending') { %>
+                                <form action="/admin/update-transaction/<%= transaction.TransactionID %>" method="POST" style="display: inline;">
+                                    <input type="hidden" name="status" value="completed">
+                                    <button type="submit" class="completed">Xác nhận</button>
+                                </form>
+                                <form action="/admin/update-transaction/<%= transaction.TransactionID %>" method="POST" style="display: inline;">
+                                    <input type="hidden" name="status" value="failed">
+                                    <button type="submit" class="failed">Hủy</button>
+                                </form>
+                            <% } else { %>
+                                <button class="disabled" disabled>Đã xử lý</button>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

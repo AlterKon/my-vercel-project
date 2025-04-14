@@ -1,0 +1,249 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Header</title>
+    <style>
+        /* Định dạng chung */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: white;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e1e1e;
+    padding: 10px 20px;
+}
+
+/* Logo */
+.logo img {
+    height: 50px;
+}
+
+/* Menu chính */
+nav ul {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    position: relative;
+    margin: 0 15px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding: 8px 15px;
+}
+
+nav ul li a:hover {
+    background-color: #333;
+    border-radius: 5px;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #1e1e1e;
+    list-style: none;
+    padding: 10px 0;
+    width: 150px;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu li {
+    padding: 5px 10px;
+}
+
+.dropdown-menu li a {
+    display: block;
+    color: white;
+}
+
+.dropdown-menu li a:hover {
+    background-color: #333;
+}
+
+/* Thanh tìm kiếm */
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 5px;
+    padding: 5px;
+    position: relative; /* Để kết quả tìm kiếm hiển thị ngay dưới */
+    width: 250px;
+}
+
+.search-bar input {
+    border: none;
+    padding: 5px;
+    outline: none;
+    width: 100%;
+}
+
+.search-bar button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* Phần danh sách kết quả tìm kiếm */
+.search-results {
+    position: absolute;
+    top: 100%; /* Hiển thị ngay dưới ô tìm kiếm */
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    max-height: 200px;
+    overflow-y: auto;
+    display: none; /* Mặc định ẩn */
+    z-index: 100;
+}
+
+.search-results .search-item {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.search-results .search-item a {
+    text-decoration: none;
+    color: black;
+    display: block;
+}
+
+.search-results .search-item:hover {
+    background: #f0f0f0;
+}
+
+
+/* Menu cá nhân */
+.user-menu a {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px 15px;
+}
+
+.user-menu a:hover {
+    background-color: #333;
+    border-radius: 5px;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/novels">Tiểu thuyết</a></li>
+                <li><a href="/genres">Thể loại</a></li>
+                <li><a href="/discussions">Thảo luận</a></li>
+                <!-- <li class="dropdown">
+                    <a href="#">Hướng dẫn</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/guide/upload">Đăng truyện</a></li>
+                        <li><a href="/guide/feedback">Góp ý - Báo lỗi</a></li>
+                    </ul>
+                </li> -->
+            </ul>
+        </nav>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Tìm kiếm...">
+            <button id="search-button">🔍</button>
+            <div id="search-results" class="search-results"></div> <!-- Gợi ý kết quả -->
+        </div>
+        
+        <div class="user-menu">
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <% if (currentUser.role === 'admin') { %>
+                    <a href="/Admin/Users">Quản lý</a>
+                <% } %>
+                <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/user/logout">Đăng xuất</a>
+            <% } else { %>
+                <a href="/login">Đăng nhập</a>
+                <a href="/register">Đăng ký</a>
+            <% } %>
+        </div>   
+
+    </header>
+    <script>
+        function searchNovels() {
+    const query = document.getElementById("search").value;
+    if (query) {
+        window.location.href = `/search?query=${encodeURIComponent(query)}`;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search-input");
+    const searchButton = document.getElementById("search-button");
+    const resultsContainer = document.getElementById("search-results");
+
+    searchInput.addEventListener("input", async function () {
+        const query = searchInput.value.trim();
+        if (query.length === 0) {
+            resultsContainer.style.display = "none";
+            return;
+        }
+
+        try {
+            const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+            const results = await response.json();
+            displaySearchResults(results);
+        } catch (error) {
+            console.error("Lỗi tìm kiếm:", error);
+        }
+    });
+
+    function displaySearchResults(results) {
+    resultsContainer.innerHTML = "";
+
+    if (results.length === 0) {
+        resultsContainer.innerHTML = "<div class='search-item'>Không tìm thấy kết quả.</div>";
+    } else {
+        results.forEach(novel => {
+            const item = document.createElement("div");
+            item.classList.add("search-item");
+            item.innerHTML = `<a href="/novels/${novel.NovelID}">${novel.Title}</a>`;
+            resultsContainer.appendChild(item);
+        });
+    }
+
+    resultsContainer.style.display = "block";
+}
+    // Ẩn kết quả khi click bên ngoài
+    document.addEventListener("click", function (e) {
+        if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+            resultsContainer.style.display = "none";
+        }
+    });
+});
+    </script>    
+</body>
+</html>

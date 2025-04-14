@@ -1,0 +1,147 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="topnav">
+        <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Users">Tài khoản</a>
+        <a href="/Admin/Novels">Tiểu thuyết</a>
+        <a class="active" href="/Admin/Genres">Thể loại</a>
+        <a href="/Admin/Transactions">Giao dịch</a>
+        <a href="/Admin/Discussions">Bài thảo luận</a>
+        <a href="/Admin/Reports">Báo cáo</a>
+        <a href="/Admin/SubscriptionPlans">Gói đọc</a>
+        <div class="user-menu">
+            <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+                <% if (currentUser.role === 'admin') { %>
+                    <a href="/Admin/Users">Quản lý</a>
+                <% } %>
+                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/logout">Đăng xuất</a>
+            <% } else { %>
+                <a href="/login">Đăng nhập</a>
+                <a href="/register">Đăng ký</a>
+            <% } %>
+        </div> 
+    </div>
+    <div class="table-container">
+        <div class="title">Danh sách thể loại</div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Mô tả</th>
+                <th>Số lượng tiểu thuyết</th>
+                <th>Action</th>
+            </tr>
+            <button onclick="openFormAdd()">Thêm Thể Loại</button>
+            <div id="genreFormAdd" class="overlay" style="display: none;">
+                <div class="popup">
+                    <form action="/Admin/create-genre" method="post">
+                        <fieldset>
+                            <legend>Thêm Thể Loại</legend>
+                            <div class="input-group">
+                                <label>Tên:</label>
+                                <input type="text" name="GenreName">
+                            </div>
+                            <div class="input-group">
+                                <label>Mô tả:</label>
+                                <input type="text" name="Description">
+                            </div>
+                            <div>
+                                <button type="submit">Lưu</button>
+                                <button type="button" onclick="closeFormAdd()">Đóng</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <% genres.forEach(genre => { %>
+                <tr>
+                    <td><%= genre.GenreID %></td>
+                    <td><%= genre.GenreName %></td>
+                    <td><%= genre.Description %></td>
+                    <td><%= genre.NovelCount %></td>
+                    <th>
+                        <button onclick="openFormUpdate(
+                            <%= genre.GenreID %>, 
+                            '<%= genre.GenreName %>',
+                            '<%= genre.Description %>'
+                        )">Sửa</button>
+                        <button onclick="deleteGenre(<%= genre.GenreID %>)">Xóa</button>
+                    </th>
+                </tr>
+            <% }); %>
+            <div id="genreFormUpdate" class="overlay" style="display: none;">
+                <div class="popup">
+                    <form action="/Admin/update-genre" method="post">
+                        <fieldset>
+                            <legend>Sửa thể loại</legend>
+            
+                            <!-- ID (Ẩn đi) -->
+                            <input type="hidden" name="GenreID" id="updateGenreID">
+            
+                            <div class="input-group">
+                                <label>Tên thể loại:</label>
+                                <input type="text" name="GenreName" id="updateName">
+                            </div>
+                            <div class="input-group">
+                                <label>Mô tả:</label>
+                                <input type="text" name="Description" id="updateDescription">
+                            </div>
+                            <div>
+                                <button type="submit">Lưu</button>
+                                <button type="button" onclick="closeFormUpdate()">Đóng</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </table>
+    </div>
+    <script>
+         function deleteGenre(GenreID) {
+            if (!confirm("Bạn có chắc muốn xóa thể loại này?")) return;
+
+            fetch('/admin/delete-genre', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ GenreID })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi:", error);
+                alert("Có lỗi xảy ra, vui lòng thử lại!");
+            });
+        }
+
+        function openFormAdd() {
+            document.getElementById("genreFormAdd").style.display = "flex";
+        }
+        function closeFormAdd() {
+            document.getElementById("genreFormAdd").style.display = "none";
+        }
+
+        function openFormUpdate(GenreID, GenreName,Description) {
+            document.getElementById("updateGenreID").value = GenreID;
+            document.getElementById("updateName").value = GenreName;
+            document.getElementById("updateDescription").value = Description;
+            document.getElementById("genreFormUpdate").style.display = "flex";
+        }
+
+        function closeFormUpdate() {
+            document.getElementById("genreFormUpdate").style.display = "none";
+        }
+    </script>
+</body>
+</html>
