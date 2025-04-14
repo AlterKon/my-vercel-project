@@ -23,6 +23,9 @@ configViewEngine(app);
 app.use('/', publicRoutes);
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
+app.get('/test', (req, res) => {
+    res.send('Test route is working!');
+  });
 
 // Start
 const port = process.env.PORT || 8888;
