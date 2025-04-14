@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const session = require('./config/session');
 const cors = require('cors');
+const path = require('path');
 const { setLocals } = require('./middlewares/authMiddleware');
 const publicRoutes = require('./routes/publicRoutes');
 const userRoutes = require('./routes/userRoutes');
