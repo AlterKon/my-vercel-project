@@ -22,4 +22,8 @@ app.use('/', publicRoutes);
 app.use('/user', userRoutes);
 app.use('/admin', adminRoutes);
 
-module.exports = app;
+const port = process.env.PORT || 3000;
+
+app.listen(port, "0.0.0.0", function () {
+    console.log(`Server running on port ${port}`);
+});
