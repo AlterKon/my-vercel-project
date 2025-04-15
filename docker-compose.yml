@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: cong1234  # Đặt mật khẩu root của MySQL
+      MYSQL_DATABASE: lnovel           # Tên database của bạn
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+  app:
+    build: .
+    container_name: node_app
+    depends_on:
+      - mysql
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+
+networks:
+  app_network:
+    driver: bridge
