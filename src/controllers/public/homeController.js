@@ -22,7 +22,7 @@ const HomePage = async (req, res) => {
 }
 
 const FindNovels = async (req, res) => {
-    const query = req.query.query;
+    const query = req.query.q;;
     if (!query) return res.json([]);
 
     try {
