@@ -18,6 +18,8 @@ const NovelHomePage = async (req, res) => {
 const NovelDetails = async (req, res) => {
     const novelId = req.params.id;
     const currentUserId = req.session.user ? req.session.user.id : null;
+    const message = req.session.message;
+    delete req.session.message;
 
     try {
         const data = await novelService.getNovelDetails(novelId, currentUserId);
@@ -31,7 +33,8 @@ const NovelDetails = async (req, res) => {
             genres: data.genres,
             chapters: data.chapters,
             isAuthor: data.isAuthor,
-            currentUser: req.session.user
+            currentUser: req.session.user,
+            message
         });
     } catch (error) {
         console.error("Lỗi khi load NovelDetails:", error);

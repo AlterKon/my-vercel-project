@@ -7,7 +7,8 @@ const AddChapterPage = async (req, res) => {
         const novel = await chapterService.fetchNovelInfo(novelID);
 
         if (novel.AuthorID !== req.session.user.id) {
-            return res.status(403).send("Bạn không có quyền thêm chương cho tiểu thuyết này.");
+            req.session.message = "Bạn không có quyền thêm chương cho tiểu thuyết này.";
+            return res.redirect(`/novels/${novelID}`);
         }
 
         res.render('partials/layout', { 
