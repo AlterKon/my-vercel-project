@@ -22,11 +22,11 @@ const HomePage = async (req, res) => {
 }
 
 const FindNovels = async (req, res) => {
-    const query = req.query.q;
+    const query = req.query.query;
     if (!query) return res.json([]);
 
     try {
-        const results = await homeService.searchNovels(query);
+        const results = await novelService.searchNovels(query);
         res.json(results);
     } catch (err) {
         console.error(err);
