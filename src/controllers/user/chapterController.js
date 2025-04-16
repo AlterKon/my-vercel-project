@@ -6,6 +6,10 @@ const AddChapterPage = async (req, res) => {
         const novelID = req.params.id;
         const novel = await chapterService.fetchNovelInfo(novelID);
 
+        if (novel.AuthorID !== req.session.user.id) {
+            return res.status(403).send("Bạn không có quyền thêm chương cho tiểu thuyết này.");
+        }
+
         res.render('partials/layout', { 
             content: '../user/add-chapter', 
             novel,
@@ -16,7 +20,6 @@ const AddChapterPage = async (req, res) => {
         res.status(err.status || 500).send(err.message || "Lỗi máy chủ");
     }
 };
-
 const AddNewChapter = async (req, res) => {
     try {
         const novelID = req.params.id;
