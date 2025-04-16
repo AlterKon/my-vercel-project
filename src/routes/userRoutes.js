@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middlewares/authMiddleware')
-const {upload, upload_transaction} = require('../middlewares/upload');
+const {upload_novel, upload_transaction} = require('../middlewares/upload');
 const {LogOut} = require('../controllers/user/logoutController')
 const {ProfileHomePage, UserProfile, ChangePassword, NovelOwnLimit, UserBuyPlans, AddNovelPage, AddNewNovel, ReadBookMark} = require('../controllers/user/profileController')
 const {NovelReport, AddNovelToLibrary} = require('../controllers/user/novelController')
