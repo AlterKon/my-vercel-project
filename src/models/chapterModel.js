@@ -2,7 +2,7 @@ const pool = require('../config/database');
 
 const getNovelBasicInfo = (novelID) => {
     return pool.query(
-        `SELECT NovelID, Title, AuthorID, Description, ... FROM Novels WHERE NovelID = ?`, 
+        `SELECT NovelID, Title, AuthorID FROM Novels WHERE NovelID = ?`, 
         [novelID]
     );
 };
