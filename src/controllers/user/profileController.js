@@ -66,7 +66,7 @@ const UserBuyPlans = async (req, res) => {
     try {
         const { planId, paymentMethod, transactionId } = req.body;
         const userID = req.session.user.id;
-        const proofImage = req.file ? `/images/transactions/${req.file.filename}` : null;
+        const proofImage = req.file ? req.file.path : null;
     
         await profileService.createTransaction(userID, planId, paymentMethod, transactionId, proofImage);
         res.status(200).json({ message: 'Giao dịch đã được tạo. Chờ xác nhận!' });
@@ -102,7 +102,7 @@ const AddNovelPage = async (req, res) => {
 const AddNewNovel = async (req, res) => {
     try {
         const { title, description, genres, status } = req.body;
-        const coverImage = req.file ? `/images/novel/${req.file.filename}` : null;
+        const coverImage = req.file ? req.file.path : null;
 
         if (!title || !description || !coverImage) {
             return res.status(400).send("Vui lòng nhập đầy đủ thông tin.");

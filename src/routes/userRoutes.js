@@ -18,7 +18,7 @@ router.post('/profile/:id/change-password', ChangePassword);
 router.get('/check-novel-limit', NovelOwnLimit);
 router.post('/purchase',upload_transaction.single('proofImage'), UserBuyPlans);
 router.get('/upload', auth.isAuthenticated, AddNovelPage);
-router.post('/upload', auth.isAuthenticated, upload.single('coverImage'), AddNewNovel);
+router.post('/upload', auth.isAuthenticated, upload_novel.single('coverImage'), AddNewNovel);
 router.get('/novel/:NovelID/continue', auth.isAuthenticated, ReadBookMark);
 
 router.post('/novels/:id/report', NovelReport);
