@@ -1,0 +1,161 @@
+/* CSS cho giao diện upload tiểu thuyết */
+.upload-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .upload-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 28px;
+    color: #333 !important;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    font-weight: 600;
+    margin: 15px 0 5px;
+    color: #444 !important;
+    font-size: 16px;
+  }
+  
+  input[type="text"], 
+  textarea, 
+  select {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+    transition: border-color 0.3s;
+  }
+  
+  input[type="text"]:focus, 
+  textarea:focus, 
+  select:focus {
+    outline: none;
+    border-color: #4d90fe;
+    box-shadow: 0 0 5px rgba(77, 144, 254, 0.5);
+  }
+  
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  
+  input[type="file"] {
+    padding: 10px 0;
+    width: 100%;
+  }
+  
+  /* Nút đổi file */
+  input[type="file"]::file-selector-button {
+    padding: 8px 15px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #333;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: background-color 0.2s;
+  }
+  
+  input[type="file"]::file-selector-button:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Phần thể loại */
+  #genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    border: 1px solid #eee;
+  }
+  
+  .genre-label {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin: 0;
+  }
+  
+  .genre-label:hover {
+    background-color: #f0f8ff;
+    border-color: #4d90fe;
+  }
+  
+  .genre-label input[type="checkbox"] {
+    margin-right: 6px;
+    cursor: pointer;
+  }
+  
+  .genre-name {
+    font-size: 14px;
+  }
+  
+  /* Trạng thái */
+  select {
+    cursor: pointer;
+    background-color: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 30px;
+  }
+  
+  /* Nút gửi */
+  button[type="submit"] {
+    margin-top: 25px;
+    padding: 14px;
+    background-color: #4d90fe;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #357ae8;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .upload-container {
+      padding: 20px;
+      margin: 15px;
+    }
+    
+    #genres {
+      padding: 10px;
+    }
+    
+    .genre-label {
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+  }

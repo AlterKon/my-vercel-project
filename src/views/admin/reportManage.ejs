@@ -3,11 +3,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Manage</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin/reportManage.css">
 </head>
 <body>
     <div class="topnav">
         <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Statistical">Thống kê</a>
         <a href="/Admin/Users">Tài khoản</a>
         <a href="/Admin/Novels">Tiểu thuyết</a>
         <a href="/Admin/Genres">Thể loại</a>
@@ -20,7 +21,7 @@
                 <% if (currentUser.role === 'admin') { %>
                     <a href="/Admin/Users">Quản lý</a>
                 <% } %>
-                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
                 <a href="/logout">Đăng xuất</a>
             <% } else { %>
                 <a href="/login">Đăng nhập</a>
@@ -88,21 +89,66 @@
         </table>
     </div>
     <script>
-        async function resolveReport(ReportID, type) {
-        const confirmAction = confirm("Bạn có chắc chắn muốn xác nhận báo cáo này?");
-        if (!confirmAction) return;
-
-        const response = await fetch(`/Admin/resolve-report/${ReportID}?type=${type}`, { method: "POST",headers: { "Content-Type": "application/json" },
-        credentials: "include" });
-        const data = await response.json();
-        
-        if (data.success) {
-            alert("Báo cáo đã được giải quyết!");
-            location.reload(); // Cập nhật lại danh sách
-        } else {
-            alert("Lỗi: " + data.message);
+    document.addEventListener('DOMContentLoaded', function() {
+    // Xử lý các báo cáo tiểu thuyết
+    const novelReports = document.querySelectorAll('#novelReportTableBody tr');
+    novelReports.forEach(row => {
+        const statusCell = row.cells[4];
+        if (statusCell.textContent.includes('Đang chờ')) {
+            statusCell.classList.add('status-pending');
+        } else if (statusCell.textContent.includes('Đã xử lý')) {
+            statusCell.classList.add('status-resolved');
+        } else if (statusCell.textContent.includes('Từ chối')) {
+            statusCell.classList.add('status-rejected');
         }
+    });
+    
+    // Xử lý các báo cáo thảo luận
+    const discussionReports = document.querySelectorAll('#discussionReportTableBody tr');
+    discussionReports.forEach(row => {
+        const statusCell = row.cells[4];
+        if (statusCell.textContent.includes('Đang chờ')) {
+            statusCell.classList.add('status-pending');
+        } else if (statusCell.textContent.includes('Đã xử lý')) {
+            statusCell.classList.add('status-resolved');
+        } else if (statusCell.textContent.includes('Từ chối')) {
+            statusCell.classList.add('status-rejected');
+        }
+    });
+});
+
+// Xử lý báo cáo
+function resolveReport(reportId, type) {
+    if (!confirm('Bạn có chắc muốn xác nhận báo cáo này?')) {
+        return;
     }
+    
+    fetch(`/admin/ResolveReport/${type}/${reportId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi khi xử lý báo cáo');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('Đã xác nhận báo cáo thành công!');
+            // Refresh trang để cập nhật trạng thái
+            location.reload();
+        } else {
+            alert('Có lỗi xảy ra: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi:', error);
+        alert('Đã xảy ra lỗi khi xử lý yêu cầu');
+    });
+}
     </script>
 </body>
 </html>

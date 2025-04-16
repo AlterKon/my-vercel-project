@@ -1,0 +1,202 @@
+/* CSS cho trang chi tiết discussion */
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 25px;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    line-height: 1.6;
+  }
+  
+  h1 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 28px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 12px;
+  }
+  
+  h2 {
+    color: #444;
+    margin: 30px 0 15px 0;
+    font-size: 22px;
+  }
+  
+  p {
+    margin-bottom: 15px;
+    color: #333;
+  }
+  
+  /* Thông tin người đăng */
+  p:nth-child(2) {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  /* Nội dung chính */
+  p:nth-child(3) {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+  }
+  
+  /* Phần thích và báo cáo */
+  p:nth-child(4) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  button {
+    padding: 8px 16px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+  }
+  
+  button:hover {
+    background-color: #357abD;
+  }
+  
+  .btn-report {
+    background-color: #f0f0f0;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .btn-report:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Modal báo cáo */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+  }
+  
+  .close:hover {
+    color: #333;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+  
+  .modal-content label {
+    display: block;
+    margin: 15px 0 5px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 100px;
+    margin-bottom: 15px;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .modal-buttons button:last-child {
+    background-color: #f0f0f0;
+    color: #666;
+  }
+  
+  /* Phần bình luận */
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  li {
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border-left: 3px solid #4a90e2;
+  }
+  
+  li p {
+    margin: 0;
+  }
+  
+  /* Textarea bình luận */
+  #commentContent {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 80px;
+    margin: 15px 0;
+    font-family: Arial, sans-serif;
+    resize: vertical;
+  }
+  
+  #commentContent:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    main {
+      padding: 15px;
+    }
+    
+    h1 {
+      font-size: 24px;
+    }
+    
+    .modal-content {
+      width: 95%;
+      padding: 15px;
+    }
+  }

@@ -3,11 +3,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Gói Đọc</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin/subscriptionManage.css">
 </head>
 <body>
     <div class="topnav">
         <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Statistical">Thống kê</a>
         <a href="/Admin/Users">Tài khoản</a>
         <a href="/Admin/Novels">Tiểu thuyết</a>
         <a href="/Admin/Genres">Thể loại</a>
@@ -20,7 +21,7 @@
                     <% if (currentUser.role === 'admin') { %>
                         <a href="/Admin/Users">Quản lý</a>
                     <% } %>
-                    <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                    <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
                     <a href="/logout">Đăng xuất</a>
                 <% } else { %>
                     <a href="/login">Đăng nhập</a>
@@ -88,24 +89,80 @@
     </div>
     </div>
     <script>
-        function openFormAdd() {
-            document.getElementById("subscriptionFormAdd").style.display = "flex";
-        }
+        // Functions for handling subscription plan forms
 
-        function closeFormAdd() {
-            document.getElementById("subscriptionFormAdd").style.display = "none";
-        }
-        function editPlan(id, name, price, maxNovels) {
-            document.getElementById("editPlanID").value = id;
-            document.getElementById("editPlanName").value = name;
-            document.getElementById("editPrice").value = price;
-            document.getElementById("editMaxNovels").value = maxNovels;
-            document.getElementById("editForm").style.display = "block";
-        }
+// Mở form thêm gói đọc
+function openFormAdd() {
+    document.getElementById('subscriptionFormAdd').style.display = 'flex';
+}
 
-        function closeEditForm() {
-            document.getElementById("editForm").style.display = "none";
+// Đóng form thêm gói đọc
+function closeFormAdd() {
+    document.getElementById('subscriptionFormAdd').style.display = 'none';
+}
+
+// Hiển thị form sửa gói đọc với dữ liệu hiện tại
+function editPlan(planId, planName, price, maxNovels) {
+    document.getElementById('editPlanID').value = planId;
+    document.getElementById('editPlanName').value = planName;
+    document.getElementById('editPrice').value = price;
+    document.getElementById('editMaxNovels').value = maxNovels;
+    document.getElementById('editForm').style.display = 'flex';
+}
+
+// Đóng form sửa gói đọc
+function closeEditForm() {
+    document.getElementById('editForm').style.display = 'none';
+}
+
+// Định dạng số tiền theo format tiền tệ Việt Nam
+document.addEventListener('DOMContentLoaded', function() {
+    const priceElements = document.querySelectorAll('td:nth-child(3)');
+    
+    priceElements.forEach(element => {
+        const text = element.textContent;
+        if (text.includes('VND')) {
+            const price = parseInt(text);
+            if (!isNaN(price)) {
+                element.textContent = new Intl.NumberFormat('vi-VN').format(price) + ' VND';
+            }
         }
+    });
+    
+    // Đóng popup khi click bên ngoài
+    const overlays = document.querySelectorAll('.overlay');
+    overlays.forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                overlay.style.display = 'none';
+            }
+        });
+    });
+});
+
+// Validation cho form input
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            const priceInput = form.querySelector('input[name="Price"]');
+            const maxNovelsInput = form.querySelector('input[name="MaxNovels"]');
+            
+            if (priceInput && parseInt(priceInput.value) < 0) {
+                alert('Giá gói không được âm!');
+                event.preventDefault();
+                return false;
+            }
+            
+            if (maxNovelsInput && parseInt(maxNovelsInput.value) <= 0) {
+                alert('Số tiểu thuyết phải lớn hơn 0!');
+                event.preventDefault();
+                return false;
+            }
+        });
+    });
+});
     </script>
 </body>
 </html>

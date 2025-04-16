@@ -1,6 +1,8 @@
+<link rel="stylesheet" href="/css/user/discussion_new.css">
+
 <main>
     <h1>Tạo bài thảo luận</h1>
-    <form action="/Discussions/new" method="POST">
+    <form action="/user/discussions/new" method="POST">
         <label for="title">Tiêu đề:</label>
         <input type="text" id="title" name="title" required>
 
@@ -8,6 +10,6 @@
         <textarea id="content" name="content" required></textarea>
 
         <button type="submit">Đăng bài</button>
-        <a href="/Discussions" class="btn">Hủy</a>
+        <a href="/discussions" class="btn">Hủy</a>
     </form>
 </main>

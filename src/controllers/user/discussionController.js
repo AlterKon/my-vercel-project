@@ -1,10 +1,14 @@
 const discussionModel = require('../../models/discussionModel');
 const discussionService = require('../../services/discussionService');
 
-const AddDiscussionPage = (req, res) => {
-    res.render("partials/layout",{content: '../user/discussion_new'});
+const AddDiscussionPage = async (req, res) => {
+    try {
+        res.render("partials/layout", { content: '../user/discussion_new' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Server Error");
+    }
 }
-
 const AddDiscussion = async (req, res) => {
     try {
         const { title, content } = req.body;
@@ -43,7 +47,7 @@ const DiscussionDetail = async (req, res) => {
         const [likes] = await discussionModel.getDiscussionLikeCount(discussionID);
 
         res.render("partials/layout", {
-            content: '../user/discussions_detail',
+            content: '../user/discussion_details',
             discussion: discussion[0],
             comments,
             likeCount: likes[0].LikeCount

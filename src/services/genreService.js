@@ -34,7 +34,15 @@ const updateGenre = async (GenreID, GenreName, Description) => {
 };
 
 const deleteGenre = async (GenreID) => {
-    return await genreModel.deleteGenreById(GenreID);
+    // Kiểm tra thể loại có liên kết tiểu thuyết không
+    const hasNovels = await genreModel.checkGenreHasNovels(GenreID);
+    if (hasNovels) {
+        return { blocked: true }; // ngăn xóa
+    }
+
+    // Nếu không có tiểu thuyết liên kết, thì xóa
+    const result = await genreModel.deleteGenreById(GenreID);
+    return { blocked: false, result };
 };
 
 module.exports = {

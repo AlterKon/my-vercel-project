@@ -47,7 +47,11 @@ const DeleteGenre = async (req, res) => {
             return res.status(400).json({ success: false, message: "Thiếu GenreID!" });
         }
 
-        const result = await genreService.deleteGenre(GenreID);
+        const { blocked, result } = await genreService.deleteGenre(GenreID);
+
+        if (blocked) {
+            return res.status(400).json({ success: false, message: "Không thể xóa thể loại vì đang liên kết với tiểu thuyết!" });
+        }
 
         if (result.affectedRows > 0) {
             res.json({ success: true, message: "Xóa thể loại thành công!" });

@@ -1,56 +1,5 @@
-<style>
-    .modal {
-    display: none; /* Quan trọng: Ẩn modal khi vào trang */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+<link rel="stylesheet" href="/css/user/discussion_details.css">
 
-/* Nội dung modal */
-.modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    width: 300px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-
-/* Nút đóng */
-.close {
-    float: right;
-    font-size: 24px;
-    cursor: pointer;
-}
-
-/* Nút trong modal */
-.modal-buttons {
-    margin-top: 10px;
-}
-
-.modal-buttons button {
-    padding: 8px 15px;
-    margin: 5px;
-    border: none;
-    cursor: pointer;
-}
-
-.modal-buttons button:first-child {
-    background: #ff4d4d;
-    color: white;
-}
-
-.modal-buttons button:last-child {
-    background: #ccc;
-}
-</style>
 <main>
     <h1><%= discussion.Title %></h1>
     <p>Người đăng: <%= discussion.Username %> | Ngày: <%= new Date(discussion.CreatedAt).toLocaleDateString() %></p>

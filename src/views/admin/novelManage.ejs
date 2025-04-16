@@ -3,11 +3,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin/novelManage.css">
 </head>
 <body>
     <div class="topnav">
         <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Statistical">Thống kê</a>
         <a href="/Admin/Users">Tài khoản</a>
         <a class="active" href="/Admin/Novels">Tiểu thuyết</a>
         <a href="/Admin/Genres">Thể loại</a>
@@ -20,7 +21,7 @@
                 <% if (currentUser.role === 'admin') { %>
                     <a href="/Admin/Users">Quản lý</a>
                 <% } %>
-                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
                 <a href="/logout">Đăng xuất</a>
             <% } else { %>
                 <a href="/login">Đăng nhập</a>
@@ -87,6 +88,48 @@
             <% }); %>
         </tbody>
         </table>
+        
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="/Admin/Novels?page=<%= currentPage - 1 %><%= title ? '&title=' + title : '' %><%= author ? '&author=' + author : '' %><%= genre ? '&genre=' + genre : '' %>">&laquo;</a>
+            <% } %>
+            
+            <% 
+            // Hiển thị tối đa 5 trang và trang hiện tại ở giữa nếu có thể
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            // Điều chỉnh lại nếu không đủ trang ở cuối
+            if (endPage - startPage < 4 && startPage > 1) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            // Hiển thị "..." nếu còn nhiều trang ở đầu
+            if (startPage > 1) { %>
+                <a href="/Admin/Novels?page=1<%= title ? '&title=' + title : '' %><%= author ? '&author=' + author : '' %><%= genre ? '&genre=' + genre : '' %>">1</a>
+                <% if (startPage > 2) { %>
+                    <span class="pagination-ellipsis">...</span>
+                <% } %>
+            <% } %>
+            
+            <% for(let i = startPage; i <= endPage; i++) { %>
+                <a href="/Admin/Novels?page=<%= i %><%= title ? '&title=' + title : '' %><%= author ? '&author=' + author : '' %><%= genre ? '&genre=' + genre : '' %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+            
+            <% 
+            // Hiển thị "..." nếu còn nhiều trang ở cuối
+            if (endPage < totalPages) { 
+                if (endPage < totalPages - 1) { %>
+                    <span class="pagination-ellipsis">...</span>
+                <% } %>
+                <a href="/Admin/Novels?page=<%= totalPages %><%= title ? '&title=' + title : '' %><%= author ? '&author=' + author : '' %><%= genre ? '&genre=' + genre : '' %>"><%= totalPages %></a>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+                <a href="/Admin/Novels?page=<%= currentPage + 1 %><%= title ? '&title=' + title : '' %><%= author ? '&author=' + author : '' %><%= genre ? '&genre=' + genre : '' %>">&raquo;</a>
+            <% } %>
+        </div>
+
         <div id="editForm" class="overlay" style="display: none;">
             <div class="popup">
                 <form id="updateNovelForm">
@@ -214,10 +257,11 @@ function searchNovels() {
     .then(response => response.json())
     .then(data => {
         const tableBody = document.getElementById("novelTableBody");
-        tableBody.innerHTML = ""; // Xóa danh sách cũ
+        tableBody.innerHTML = "";
 
-        data.forEach(novel => {
-            const row = `
+        if (Array.isArray(data.novels)) {
+            data.novels.forEach(novel => {
+                const row = `
                 <tr>
                     <td>${novel.NovelID}</td>
                     <td>${novel.Title}</td>
@@ -237,7 +281,10 @@ function searchNovels() {
                 </tr>
             `;
             tableBody.innerHTML += row;
-        });
+            });
+        } else {
+            console.error("Dữ liệu không hợp lệ:", data);
+        }
     })
     .catch(error => console.error("Lỗi tìm kiếm:", error));
 }

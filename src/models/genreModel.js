@@ -54,6 +54,14 @@ const updateGenreById = async (GenreID, GenreName, Description) => {
     return results;
 };
 
+const checkGenreHasNovels = async (GenreID) => {
+    const [rows] = await pool.execute(
+        "SELECT COUNT(*) as count FROM NovelGenres WHERE GenreID = ?",
+        [GenreID]
+    );
+    return rows[0].count > 0; // true nếu có tiểu thuyết
+};
+
 const deleteGenreById = async (GenreID) => {
     const [result] = await pool.execute(
         "DELETE FROM Genres WHERE GenreID = ?",
@@ -69,5 +77,6 @@ module.exports = {
     getAllGenresWithCount,
     insertNewGenre,
     updateGenreById,
+    checkGenreHasNovels,
     deleteGenreById
 };

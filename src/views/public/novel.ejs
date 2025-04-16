@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/css/public/novel.css">
 <main>
     <h2>Danh sách Tiểu thuyết</h2>
 <div class="novel-list">
@@ -14,54 +15,6 @@
 </div>
 </main>
 
-
-<style>
-.novel-list {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 6 tiểu thuyết mỗi hàng */
-    gap: 20px;
-    padding: 20px;
-}
-
-.novel-card {
-    background: white;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.novel-card img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 5px;
-}
-
-.novel-card h3 {
-    margin-top: 10px;
-}
-
-.novel-card a {
-    text-decoration: none;
-    color: #007BFF;
-    font-weight: bold;
-}
-
-/* Đảm bảo hiển thị tốt trên thiết bị nhỏ hơn */
-@media (max-width: 1200px) {
-    .novel-list {
-        grid-template-columns: repeat(4, 1fr); /* 4 cột khi màn hình nhỏ hơn */
-    }
-}
-
-@media (max-width: 768px) {
-    .novel-list {
-        grid-template-columns: repeat(2, 1fr); /* 2 cột trên mobile */
-    }
-}
-
-</style>
 
 <script>
     function checkNovelLocked(event, novelId, locked) {

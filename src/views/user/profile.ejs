@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/user/profile.css">
+
 <main>
     <h2>Hồ sơ của <%= user.Username %></h2>
 <p>Email: <%= user.Email %></p>
@@ -96,202 +98,633 @@
     <h3>Thu nhập của bạn: <%= authorIncome.toLocaleString() %> VND</h3>
 <% } %>
 
-<% availablePlans.forEach(plan => { %>
-    <tr>
-        <td><%= plan.PlanName %></td>
-        <td><%= plan.Price %> VND</td>
-        <td><%= plan.MaxNovels %></td>
-        <td>
-            <form id="form-<%= plan.PlanID %>" enctype="multipart/form-data" onsubmit="submitPlanForm(event, <%= plan.PlanID %>)">
-                <select name="paymentMethod">
-                    <option value="momo">Momo</option>
-                    <option value="bank">Chuyển khoản ngân hàng</option>
-                </select>
-                <input type="file" name="proofImage" accept="image/*" required>
-                <input type="hidden" name="planId" value="<%= plan.PlanID %>">
-                <button type="submit">Mua</button>
-            </form>
-        </td>
-    </tr>
-<% }) %>
+<div class="subscription-plans">
+  <h2>Danh sách gói dịch vụ</h2>
+  <table class="plans-table">
+    <thead>
+      <tr>
+        <th>Tên gói</th>
+        <th>Giá</th>
+        <th>Số lượng truyện tối đa</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% availablePlans.forEach(plan => { %>
+        <tr>
+          <td><%= plan.PlanName %></td>
+          <td><%= plan.Price.toLocaleString('vi-VN') %> VND</td>
+          <td><%= plan.MaxNovels %></td>
+          <td>
+            <button class="btn-purchase" onclick="showPurchaseOptions(<%= plan.PlanID %>, '<%= plan.PlanName %>', <%= plan.Price %>)">Mua gói</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
 
+<!-- Modal chọn phương thức thanh toán -->
+<div id="payment-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Chọn phương thức thanh toán</h3>
+    <form id="payment-form" enctype="multipart/form-data">
+      <input type="hidden" id="selected-plan-id" name="planId" value="">
+      
+      <div class="form-group">
+        <label for="paymentMethod">Phương thức thanh toán:</label>
+        <select id="paymentMethod" name="paymentMethod" onchange="togglePaymentInfo()">
+          <option value="momo">Momo</option>
+          <option value="bank">Chuyển khoản ngân hàng</option>
+        </select>
+      </div>
+      
+      <div class="payment-details">
+        <div id="payment-info-text">
+          <p class="plan-name">Gói: <span id="plan-name-display"></span></p>
+          <p class="plan-price">Giá: <span id="plan-price-display"></span> VND</p>
+        </div>
+      </div>
+      
+      <div class="form-buttons">
+        <button type="button" onclick="confirmPaymentMethod()">Xác nhận</button>
+        <button type="button" class="btn-cancel" onclick="closePaymentModal()">Hủy</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-<div id="qr-modal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <span class="close-qr">&times;</span>
-      <h3>🟣 Quét mã QR Momo để thanh toán</h3>
-      <img id="qr-image" src="" width="300" alt="QR Code Momo">
-      <p id="qr-transaction-id"></p>
-      <div><button onclick="closeQRModal()">Đóng</button></div>
+<!-- Modal hiển thị QR code -->
+<div id="qr-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-qr">&times;</span>
+    <div class="qr-header">
+      <img src="/public/images/momo-logo.png" alt="Momo" class="payment-logo" id="payment-logo">
+      <h3 id="qr-title">Quét mã QR để thanh toán</h3>
+    </div>
+    
+    <div class="qr-container">
+      <img id="qr-image" src="" alt="QR Code">
+      <div class="qr-info">
+        <p id="plan-info"></p>
+        <p id="qr-transaction-id"></p>
+        <p id="qr-instruction">Quét mã QR bằng ứng dụng để hoàn tất thanh toán</p>
+      </div>
+    </div>
+    
+    <div class="qr-actions">
+      <button onclick="showUploadForm()" class="btn-confirm">Đã thanh toán</button>
+      <button onclick="closeQRModal()" class="btn-cancel">Hủy bỏ</button>
     </div>
   </div>
+</div>
+
+<!-- Modal tải lên ảnh chứng minh thanh toán -->
+<div id="upload-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-upload">&times;</span>
+    <h3>Tải lên ảnh chứng minh thanh toán</h3>
+    
+    <form id="upload-form" enctype="multipart/form-data">
+      <input type="hidden" id="upload-plan-id" name="planId" value="">
+      <input type="hidden" id="upload-payment-method" name="paymentMethod" value="">
+      <input type="hidden" id="upload-transaction-id" name="transactionId" value="">
+      
+      <div class="form-group">
+        <label for="proofImage">Ảnh chứng minh thanh toán:</label>
+        <div class="file-upload-container">
+          <input type="file" id="proofImage" name="proofImage" accept="image/*" required onchange="previewImage(this)">
+          <label for="proofImage" class="file-upload-label">
+            <i class="fas fa-cloud-upload-alt"></i> Chọn ảnh
+          </label>
+        </div>
+        <div id="image-preview" class="image-preview"></div>
+      </div>
+      
+      <div class="form-buttons">
+        <button type="button" onclick="submitProofImage()">Xác nhận</button>
+        <button type="button" class="btn-cancel" onclick="closeUploadModal()">Hủy</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Thông báo -->
+<div id="alert-container"></div>
 </main>
 
-<style>
-    .novel-list, .subscription-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 15px;
-    }
-    .novel-card, .subscription-card {
-        padding: 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        text-align: center;
-        background: #f9f9f9;
-    }
-    .novel-card img {
-        width: 100%;
-        height: auto;
-        border-radius: 5px;
-    }
-    .novel-card:hover, .subscription-card:hover {
-        background: #e0e0e0;
-    }
-    .upload-section {
-        margin-top: 20px;
-        text-align: center;
-    }
-
-    .upload-btn {
-        display: inline-block;
-        background: #007bff;
-        color: white;
-        padding: 10px 15px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 16px;
-    }
-
-    .upload-btn:hover {
-        background: #0056b3;
-    }
-    .upload-btn {
-    background-color: #007bff;
-    color: white;
-    font-size: 16px;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: background-color 0.3s ease;
-}
-
-.upload-btn:hover {
-    background-color: #0056b3;
-}
-</style>
 
 <script>
-    document.getElementById("add-novel-btn").addEventListener("click", function () {
-        fetch('/user/check-novel-limit')
-            .then(response => response.json())
-            .then(data => {
-                if (data.remainingNovels > 0) {
-                    alert("Bạn có thể thêm tiểu thuyết!");
-                    window.location.href = "/novels";
-                } else {
-                    document.getElementById("subscription-modal").style.display = "block";
-                }
-            })
-            .catch(error => console.error(error));
-    });
+    // === JAVASCRIPT CHO TRANG HỒ SƠ NGƯỜI DÙNG ===
 
-    document.querySelector(".close").addEventListener("click", function () {
-        document.getElementById("subscription-modal").style.display = "none";
-    });
-
-    function submitPlanForm(event, planId) {
-    event.preventDefault();
-    const form = document.getElementById(`form-${planId}`);
-    const formData = new FormData(form);
-
-    fetch('/user/buy-plan', {
-        method: 'POST',
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-        if (data.success) location.reload();
-    })
-    .catch(err => console.error(err));
-}
-
-    function buyPlan(planId) {
-    const paymentMethod = document.getElementById(`payment-method-${planId}`).value;
-
-    fetch('/user/buy-plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, paymentMethod })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            if (paymentMethod === 'momo' && data.qrUrl) {
-                // Hiển thị mã QR
-                document.getElementById('qr-image').src = data.qrUrl;
-                document.getElementById('qr-transaction-id').innerText = `Mã giao dịch: ${data.transactionId}`;
-                document.getElementById('qr-modal').style.display = 'block';
-            } else {
-                alert(data.message || "Mua gói thành công!");
-                location.reload();
-            }
-        } else {
-            alert(data.message || "Có lỗi xảy ra!");
-        }
-    })
-    .catch(error => {
-        console.error(error);
-        alert("Lỗi kết nối đến server!");
-    });
-}
-
-    document.getElementById("upload-novel-btn").addEventListener("click", function () {
-        window.location.href = "/user/upload";
-    });
-
-    document.getElementById("changePasswordForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
-    
-    const userID = document.getElementById("userID").value;
-    const currentPassword = document.getElementById("currentPassword").value;
-    const newPassword = document.getElementById("newPassword").value;
-
-    if (!currentPassword || !newPassword) {
-        alert("Vui lòng nhập đầy đủ thông tin!");
+document.addEventListener('DOMContentLoaded', function() {
+  // Xử lý form đổi mật khẩu
+  const changePasswordForm = document.getElementById('changePasswordForm');
+  if (changePasswordForm) {
+    changePasswordForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const userID = document.getElementById('userID').value;
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      
+      // Validation
+      if (!currentPassword || !newPassword) {
+        showAlert('Vui lòng điền đầy đủ thông tin', 'error');
         return;
-    }
-
-    const response = await fetch(`/user/profile/${userID}/change-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword })
+      }
+      
+      if (newPassword.length < 6) {
+        showAlert('Mật khẩu mới phải có ít nhất 6 ký tự', 'error');
+        return;
+      }
+      
+      try {
+        const response = await fetch('/api/user/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userID,
+            currentPassword,
+            newPassword
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          showAlert('Đổi mật khẩu thành công', 'success');
+          changePasswordForm.reset();
+        } else {
+          showAlert(data.message || 'Đổi mật khẩu thất bại', 'error');
+        }
+      } catch (error) {
+        showAlert('Đã xảy ra lỗi, vui lòng thử lại', 'error');
+        console.error('Error:', error);
+      }
     });
+  }
+  
+  // Xử lý nút thêm tiểu thuyết
+  const addNovelBtn = document.getElementById('add-novel-btn');
 
-    const result = await response.json();
-    alert(result.message);
-    if (result.success) {
-        document.getElementById("currentPassword").value = "";
-        document.getElementById("newPassword").value = "";
+if (addNovelBtn) {
+  addNovelBtn.addEventListener('click', async function () {
+    try {
+      const response = await fetch('/user/check-novel-limit');  // hoặc /user/purchase-novels nếu bạn dùng tên này
+      const data = await response.json();
+
+      if (data.success) {
+        if (data.remainingNovels > 0) {
+          const confirmAdd = confirm(`Bạn còn ${data.remainingNovels} lượt thêm tiểu thuyết. Tiếp tục?`);
+          if (confirmAdd) {
+            window.location.href = '/novels';
+          }
+        } else {
+          alert("Bạn đã hết lượt sở hữu tiểu thuyết. Vui lòng nâng cấp gói đọc!");
+        }
+      } else {
+        alert(data.message || "Không thể kiểm tra giới hạn!");
+      }
+    } catch (err) {
+      console.error("Lỗi khi kiểm tra giới hạn:", err);
+      alert("Lỗi hệ thống. Vui lòng thử lại sau.");
     }
-});
+  });
+}
+  
+  // Xử lý nút đăng tải tiểu thuyết
+  const uploadNovelBtn = document.getElementById('upload-novel-btn');
+  if (uploadNovelBtn) {
+    uploadNovelBtn.addEventListener('click', function() {
+      window.location.href = '/user/upload';
+    });
+  }
+  
+  // Biến lưu trữ thông tin gói hiện tại
+let currentPlan = {
+  id: null,
+  name: '',
+  price: 0
+};
+
+// Biến lưu trữ thông tin giao dịch
+let transactionInfo = {
+  id: '',
+  paymentMethod: '',
+  planId: null
+};
+
+// Hàm hiển thị modal lựa chọn phương thức thanh toán
+function showPurchaseOptions(planId, planName, planPrice) {
+  console.log("Opening modal for plan:", planId, planName, planPrice);
+  
+  // Cập nhật thông tin gói hiện tại
+  currentPlan.id = planId;
+  currentPlan.name = planName;
+  currentPlan.price = planPrice;
+  
+  // Cập nhật thông tin hiển thị trong modal
+  document.getElementById('selected-plan-id').value = planId;
+  document.getElementById('plan-name-display').textContent = planName;
+  document.getElementById('plan-price-display').textContent = planPrice.toLocaleString('vi-VN');
+  
+  // Hiển thị modal
+  const modal = document.getElementById('payment-modal');
+  modal.style.display = 'flex';
+}
+
+// Xử lý chuyển đổi phương thức thanh toán
+function togglePaymentInfo() {
+  const paymentMethod = document.getElementById('paymentMethod').value;
+  console.log("Selected payment method:", paymentMethod);
+  
+  // Có thể thêm logic để hiển thị thông tin riêng theo từng phương thức thanh toán
+}
+
+// Xác nhận phương thức thanh toán và chuyển sang bước tiếp theo
+function confirmPaymentMethod() {
+  const planId = document.getElementById('selected-plan-id').value;
+  const paymentMethod = document.getElementById('paymentMethod').value;
+  
+  // Tạo ID giao dịch ngẫu nhiên
+  const transactionId = generateTransactionId();
+  
+  // Lưu thông tin giao dịch
+  transactionInfo = {
+    id: transactionId,
+    paymentMethod: paymentMethod,
+    planId: planId
+  };
+  
+  // Đóng modal chọn phương thức
+  closePaymentModal();
+  
+  // Hiển thị modal QR tương ứng
+  showQRCode(paymentMethod);
+}
+
+// Tạo ID giao dịch ngẫu nhiên
+function generateTransactionId() {
+  return 'TXN' + Date.now() + Math.floor(Math.random() * 1000);
+}
+
+// Hiển thị mã QR thanh toán
+function showQRCode(paymentMethod) {
+  // Cập nhật thông tin hiển thị
+  document.getElementById('plan-info').textContent = `Gói ${currentPlan.name} - ${currentPlan.price.toLocaleString('vi-VN')} VND`;
+  document.getElementById('qr-transaction-id').textContent = `Mã giao dịch: ${transactionInfo.id}`;
+  
+  // Cập nhật logo và tiêu đề theo phương thức thanh toán
+  if (paymentMethod === 'momo') {
+    document.getElementById('payment-logo').src = '/public/images/momo-logo.png';
+    document.getElementById('payment-logo').alt = 'Momo';
+    document.getElementById('qr-title').textContent = 'Quét mã QR để thanh toán qua Momo';
+    // Giả lập đường dẫn đến mã QR của MoMo
+    document.getElementById('qr-image').src = `/payment/qr/momo?amount=${currentPlan.price}&transactionId=${transactionInfo.id}`;
+  } else {
+    document.getElementById('payment-logo').src = '/public/images/bank-logo.png';
+    document.getElementById('payment-logo').alt = 'Bank Transfer';
+    document.getElementById('qr-title').textContent = 'Quét mã QR để chuyển khoản ngân hàng';
+    // Giả lập đường dẫn đến mã QR chuyển khoản ngân hàng
+    document.getElementById('qr-image').src = `/payment/qr/bank?amount=${currentPlan.price}&transactionId=${transactionInfo.id}`;
+  }
+  
+  // Hiển thị modal QR
+  document.getElementById('qr-modal').style.display = 'flex';
+}
+
+// Hiển thị form tải lên ảnh chứng minh thanh toán
+function showUploadForm() {
+  // Đóng modal QR
+  closeQRModal();
+  
+  // Cập nhật thông tin cho form tải lên
+  document.getElementById('upload-plan-id').value = currentPlan.id;
+  document.getElementById('upload-payment-method').value = transactionInfo.paymentMethod;
+  document.getElementById('upload-transaction-id').value = transactionInfo.id;
+  
+  // Xóa bất kỳ xem trước ảnh nào
+  document.getElementById('image-preview').innerHTML = '';
+  
+  // Hiển thị modal tải lên
+  document.getElementById('upload-modal').style.display = 'flex';
+}
+
+// Xử lý xem trước ảnh
+function previewImage(input) {
+  const preview = document.getElementById('image-preview');
+  preview.innerHTML = '';
+  
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      preview.appendChild(img);
+    }
+    
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// Gửi ảnh chứng minh thanh toán lên server
+function submitProofImage() {
+  const form = document.getElementById('upload-form');
+  const formData = new FormData(form);
+  
+  // Hiển thị trạng thái đang xử lý
+  showAlert('Đang gửi thông tin thanh toán...', 'info');
+  
+  // Gửi request đến server
+  fetch('/user/buyplan', {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Lỗi khi gửi thông tin thanh toán');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Payment submitted successfully:', data);
+    
+    // Đóng modal tải lên
+    closeUploadModal();
+    
+    // Hiển thị thông báo thành công
+    showAlert('Đã gửi thông tin thanh toán thành công! Chúng tôi sẽ xác nhận sau.', 'success');
+    
+    // Có thể làm mới trang sau 2 giây
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  })
+  .catch(error => {
+    console.error('Error submitting payment:', error);
+    showAlert('Có lỗi xảy ra: ' + error.message, 'error');
+  });
+}
+
+// Hiển thị thông báo
+function showAlert(message, type) {
+  const alertContainer = document.getElementById('alert-container');
+  const alertDiv = document.createElement('div');
+  
+  alertDiv.className = 'alert alert-' + type;
+  alertDiv.innerHTML = `
+    ${message}
+    <span class="alert-close" onclick="closeAlert(this)">&times;</span>
+  `;
+  
+  alertContainer.appendChild(alertDiv);
+  
+  // Tự động đóng thông báo sau 5 giây
+  setTimeout(() => {
+    if (alertDiv.parentNode === alertContainer) {
+      alertContainer.removeChild(alertDiv);
+    }
+  }, 5000);
+}
+
+// Đóng thông báo
+function closeAlert(element) {
+  const alertDiv = element.parentNode;
+  alertDiv.parentNode.removeChild(alertDiv);
+}
+
+// Đóng các modal
+function closePaymentModal() {
+  document.getElementById('payment-modal').style.display = 'none';
+}
 
 function closeQRModal() {
-    document.getElementById('qr-modal').style.display = 'none';
+  document.getElementById('qr-modal').style.display = 'none';
 }
 
-document.querySelector('.close-qr').addEventListener('click', closeQRModal);
-
-function openPlanList() {
-    document.getElementById("subscription-modal").style.display = "flex";
+function closeUploadModal() {
+  document.getElementById('upload-modal').style.display = 'none';
 }
 
-function closePlanList() {
-    document.getElementById("subscription-modal").style.display = "none";
+// Thêm event listener cho các nút đóng modal
+document.addEventListener('DOMContentLoaded', function() {
+  // Nút đóng modal thanh toán
+  const closeModalBtn = document.querySelector('.close-modal');
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closePaymentModal);
+  }
+  
+  // Nút đóng modal QR
+  const closeQRBtn = document.querySelector('.close-qr');
+  if (closeQRBtn) {
+    closeQRBtn.addEventListener('click', closeQRModal);
+  }
+  
+  // Nút đóng modal tải lên
+  const closeUploadBtn = document.querySelector('.close-upload');
+  if (closeUploadBtn) {
+    closeUploadBtn.addEventListener('click', closeUploadModal);
+  }
+  
+  // Đóng modal khi click bên ngoài
+  window.addEventListener('click', function(event) {
+    const paymentModal = document.getElementById('payment-modal');
+    const qrModal = document.getElementById('qr-modal');
+    const uploadModal = document.getElementById('upload-modal');
+    
+    if (event.target === paymentModal) {
+      closePaymentModal();
+    } else if (event.target === qrModal) {
+      closeQRModal();
+    } else if (event.target === uploadModal) {
+      closeUploadModal();
+    }
+  });
+});
+
+// Hiển thị thông báo
+function showAlert(message, type) {
+  const alertContainer = document.getElementById('alert-container');
+  
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert alert-${type}`;
+  alertDiv.textContent = message;
+  
+  alertContainer.appendChild(alertDiv);
+  
+  // Tự động xóa thông báo sau 3 giây
+  setTimeout(() => {
+    alertDiv.remove();
+  }, 3000);
 }
+
+// Sự kiện đóng modal khi click vào nút X
+document.querySelectorAll('.close-modal, .close-qr, .close-upload').forEach(button => {
+  button.addEventListener('click', function() {
+    this.closest('.modal').style.display = 'none';
+    
+    // Dừng kiểm tra trạng thái thanh toán nếu đang đóng modal QR
+    if (this.classList.contains('close-qr') && window.paymentCheckInterval) {
+      clearInterval(window.paymentCheckInterval);
+    }
+  });
+});
+
+// Sự kiện đóng modal khi click ra ngoài
+window.addEventListener('click', function(event) {
+  document.querySelectorAll('.modal').forEach(modal => {
+    if (event.target === modal) {
+      modal.style.display = 'none';
+      
+      // Dừng kiểm tra trạng thái thanh toán nếu đang đóng modal QR
+      if (modal.id === 'qr-modal' && window.paymentCheckInterval) {
+        clearInterval(window.paymentCheckInterval);
+      }
+    }
+  });
+});
+  
+  // Thêm các class dynamic cho elements
+  function addDynamicClasses() {
+    // Status tags
+    const statusElements = document.querySelectorAll('p:contains("Trạng thái:")');
+    statusElements.forEach(el => {
+      const text = el.textContent;
+      if (text.includes("Hoạt động")) {
+        el.innerHTML = el.innerHTML.replace("Hoạt động", '<span class="user-status status-active">Hoạt động</span>');
+      } else if (text.includes("Bị cấm")) {
+        el.innerHTML = el.innerHTML.replace("Bị cấm", '<span class="user-status status-banned">Bị cấm</span>');
+      }
+    });
+    
+    // Role tags
+    const roleElements = document.querySelectorAll('p:contains("Vai trò:")');
+    roleElements.forEach(el => {
+      const text = el.textContent;
+      if (text.includes("Quản trị viên")) {
+        el.innerHTML = el.innerHTML.replace("Quản trị viên", '<span class="role-tag role-admin">Quản trị viên</span>');
+      } else if (text.includes("Người dùng")) {
+        el.innerHTML = el.innerHTML.replace("Người dùng", '<span class="role-tag role-user">Người dùng</span>');
+      }
+    });
+    
+    // Wrap user info
+    const userInfoHeading = document.querySelector('h2:contains("Hồ sơ của")');
+    if (userInfoHeading) {
+      const userInfoDiv = document.createElement('div');
+      userInfoDiv.className = 'user-info';
+      
+      let nextEl = userInfoHeading.nextElementSibling;
+      const elementsToWrap = [userInfoHeading];
+      
+      while (nextEl && nextEl.tagName === 'P') {
+        elementsToWrap.push(nextEl);
+        nextEl = nextEl.nextElementSibling;
+      }
+      
+      elementsToWrap.forEach(el => {
+        userInfoDiv.appendChild(el.cloneNode(true));
+      });
+      
+      elementsToWrap[0].parentNode.insertBefore(userInfoDiv, elementsToWrap[0]);
+      
+      elementsToWrap.forEach(el => {
+        el.parentNode.removeChild(el);
+      });
+    }
+    
+    // Income section
+    const incomeHeading = document.querySelector('h1:contains("Thu nhập")');
+    if (incomeHeading) {
+      const incomeSection = document.createElement('div');
+      incomeSection.className = 'income-section';
+      
+      let nextEl = incomeHeading.nextElementSibling;
+      const elementsToWrap = [incomeHeading];
+      
+      while (nextEl && (nextEl.tagName === 'H3' || nextEl.tagName === 'P')) {
+        elementsToWrap.push(nextEl);
+        nextEl = nextEl.nextElementSibling;
+      }
+      
+      elementsToWrap.forEach(el => {
+        incomeSection.appendChild(el.cloneNode(true));
+      });
+      
+      elementsToWrap[0].parentNode.insertBefore(incomeSection, elementsToWrap[0]);
+      
+      elementsToWrap.forEach(el => {
+        el.parentNode.removeChild(el);
+      });
+    }
+  
+  // Thực hiện thêm class sau khi trang đã load
+  setTimeout(addDynamicClasses, 100);
+  
+  // Utility function to show alerts
+  function showAlert(message, type = 'info') {
+    // Create alert div if it doesn't exist
+    let alertDiv = document.getElementById('alert-notification');
+    if (!alertDiv) {
+      alertDiv = document.createElement('div');
+      alertDiv.id = 'alert-notification';
+      alertDiv.style.position = 'fixed';
+      alertDiv.style.top = '20px';
+      alertDiv.style.right = '20px';
+      alertDiv.style.padding = '15px 20px';
+      alertDiv.style.borderRadius = '5px';
+      alertDiv.style.color = 'white';
+      alertDiv.style.fontWeight = '500';
+      alertDiv.style.zIndex = '9999';
+      alertDiv.style.boxShadow = '0 3px 10px rgba(0,0,0,0.2)';
+      alertDiv.style.transition = 'opacity 0.3s ease';
+      document.body.appendChild(alertDiv);
+    }
+    
+    // Set style based on alert type
+    switch(type) {
+      case 'success':
+        alertDiv.style.backgroundColor = '#4caf50';
+        break;
+      case 'error':
+        alertDiv.style.backgroundColor = '#f44336';
+        break;
+      case 'warning':
+        alertDiv.style.backgroundColor = '#ff9800';
+        break;
+      default:
+        alertDiv.style.backgroundColor = '#2196f3';
+    }
+    
+    // Set message and show alert
+    alertDiv.textContent = message;
+    alertDiv.style.opacity = '1';
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+      alertDiv.style.opacity = '0';
+    }, 3000);
+  }
+  
+  // jQuery-like selector for text content
+  Document.prototype.querySelectorAll = (function(orig) {
+    return function(selector) {
+      if (selector.includes(':contains(')) {
+        const matches = selector.match(/:contains\((.*?)\)/);
+        if (matches) {
+          const textToFind = matches[1].replace(/["']/g, '');
+          const baseSelector = selector.replace(/:contains\(.*?\)/, '');
+          const elements = [...orig.call(this, baseSelector)];
+          return elements.filter(el => el.textContent.includes(textToFind));
+        }
+      }
+      return orig.call(this, selector);
+    };
+  })(Document.prototype.querySelectorAll);
+}); 
 </script>

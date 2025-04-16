@@ -56,16 +56,27 @@ const createNovelReport = async (userID, novelID, reason) => {
     return novelModel.reportNovel(userID, novelID, reason);
 };
 
-const findNovels = async (title, author, genre) => {
-    return await novelModel.findNovelsWithFilter(title, author, genre);
+const findNovels = async (title, author, genre, page = 1, limit = 10) => {
+    try {
+        // Gọi hàm model đã cập nhật để lấy dữ liệu với phân trang
+        const { novels, totalCount } = await novelModel.findNovelsWithFilter(title, author, genre, page, limit);
+        return { novels, totalCount };
+    } catch (error) {
+        console.error("Lỗi service findNovels:", error);
+        throw error;
+    }
 };
 
 const fetchAuthorsAndGenres = async () => {
-    const [authors, genres] = await Promise.all([
-        novelModel.getAllAuthors(),
-        novelModel.getAllGenres()
-    ]);
-    return { authors, genres };
+    try {
+        // Sử dụng các hàm hiện có để lấy danh sách tác giả và thể loại
+        const authors = await novelModel.getAllAuthors(); // Giả sử đã có hàm này
+        const genres = await novelModel.getAllGenres();   // Giả sử đã có hàm này
+        return { authors, genres };
+    } catch (error) {
+        console.error("Lỗi service fetchAuthorsAndGenres:", error);
+        throw error;
+    }
 };
 
 async function updateNovel(data) {
@@ -74,6 +85,8 @@ async function updateNovel(data) {
     await novelModel.insertNovelGenres(data.novelID, data.genres);
     return { success: true, message: "Cập nhật thành công!" };
 }
+
+
 
 async function lockNovel(novelID, locked) {
     const [result] = await novelModel.lockOrUnlockNovel(novelID, locked);

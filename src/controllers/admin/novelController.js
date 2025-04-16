@@ -2,11 +2,24 @@ const novelService = require("../../services/novelService");
 
 const FindNovels = async (req, res) => {
     try {
+
         const { title, author, genre } = req.query;
-        const novels = await novelService.findNovels(title, author, genre);
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+
+
+        const { novels, totalCount } = await novelService.findNovels(title, author, genre, page, limit);
+
+        const totalPages = Math.ceil(totalCount / limit);
 
         if (req.xhr || req.headers.accept.includes("application/json")) {
-            return res.json(novels);
+            return res.json({
+                novels,
+                currentPage: page,
+                totalPages,
+                totalCount
+            });
         }
 
         const { authors, genres } = await novelService.fetchAuthorsAndGenres();
@@ -18,6 +31,8 @@ const FindNovels = async (req, res) => {
             title, 
             author, 
             genre, 
+            currentPage: page,
+            totalPages,
             currentUser: req.session.user 
         });
     } catch (error) {
@@ -70,7 +85,7 @@ const DeleteNovel = async (req, res) => {
             return res.status(400).json({ success: false, message: "Thiếu NovelID!" });
         }
 
-        const result = await novelService.deleteGenre(NovelID);
+        const result = await novelService.deleteNovel(NovelID);
 
         if (result.affectedRows > 0) {
             res.json({ success: true, message: "Xóa tiểu thuyết thành công!" });

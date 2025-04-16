@@ -3,11 +3,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin/userManage.css">
 </head>
 <body>
     <div class="topnav">
         <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Statistical">Thống kê</a>
         <a class="active" href="/Admin/Users">Tài khoản</a>
         <a href="/Admin/Novels">Tiểu thuyết</a>
         <a href="/Admin/Genres">Thể loại</a>
@@ -20,7 +21,7 @@
                 <% if (currentUser.role === 'admin') { %>
                     <a href="/Admin/Users">Quản lý</a>
                 <% } %>
-                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
                 <a href="/logout">Đăng xuất</a>
             <% } else { %>
                 <a href="/login">Đăng nhập</a>

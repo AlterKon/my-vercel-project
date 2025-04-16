@@ -1,0 +1,451 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Top Navigation */
+.topnav {
+    background-color: #2c3e50;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.topnav a {
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.topnav a:first-child {
+    padding: 10px 16px;
+}
+
+.topnav a:first-child img {
+    height: 30px;
+    vertical-align: middle;
+}
+
+.topnav a:hover {
+    background-color: #3a506b;
+    color: white;
+}
+
+.topnav a.active {
+    background-color: #e67e22;
+    color: white;
+}
+
+.topnav .user-menu {
+    margin-left: auto;
+    display: flex;
+}
+
+/* Table Container */
+.table-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    padding: 20px;
+    overflow: hidden;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e67e22;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    table-layout: fixed;
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+    position: sticky;
+    top: 0;
+}
+
+table tbody tr:hover {
+    background-color: #f5f7fa;
+}
+
+/* Column widths */
+table th:nth-child(1), table td:nth-child(1) { /* ID */
+    width: 5%;
+}
+
+table th:nth-child(2), table td:nth-child(2) { /* Người báo cáo */
+    width: 15%;
+}
+
+table th:nth-child(3), table td:nth-child(3) { /* Lý do */
+    width: 25%;
+}
+
+table th:nth-child(4), table td:nth-child(4) { /* Tiểu thuyết/Thảo luận */
+    width: 20%;
+}
+
+table th:nth-child(5), table td:nth-child(5) { /* Trạng thái */
+    width: 10%;
+}
+
+table th:nth-child(6), table td:nth-child(6) { /* Thời gian */
+    width: 15%;
+}
+
+table th:nth-child(7), table td:nth-child(7) { /* Hành động */
+    width: 10%;
+}
+
+/* Hành động Button */
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Status Colors */
+td:nth-child(5) {
+    font-weight: 500;
+}
+
+/* Để phân biệt trạng thái bằng màu sắc */
+td:nth-child(5):contains('Đang chờ') {
+    color: #e67e22;
+}
+
+td:nth-child(5):contains('Đã xử lý') {
+    color: #27ae60;
+}
+
+td:nth-child(5):contains('Từ chối') {
+    color: #e74c3c;
+}
+
+/* Responsive */
+@media screen and (max-width: 992px) {
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .topnav {
+        flex-wrap: wrap;
+    }
+    
+    .topnav .user-menu {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .table-container {
+        margin: 10px;
+        padding: 10px;
+    }
+    
+    table th, table td {
+        padding: 8px 10px;
+    }
+    
+    .title {
+        font-size: 18px;
+    }
+}
+
+/* Làm nổi bật các bảng báo cáo khác nhau */
+.table-container:nth-child(2) {
+    border-left: 4px solid #3498db;
+}
+
+.table-container:nth-child(3) {
+    border-left: 4px solid #e74c3c;
+}
+
+/* Tùy chỉnh cho lý do dài */
+td:nth-child(3) {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Hiệu ứng cho hàng báo cáo */
+@keyframes highlight {
+    0% { background-color: rgba(255, 235, 59, 0.2); }
+    100% { background-color: transparent; }
+}
+
+.new-report {
+    animation: highlight 2s ease-in-out;
+}
+
+/* Tùy chỉnh CSS để thêm hiệu ứng cho trạng thái */
+td:nth-child(5) {
+    position: relative;
+    padding-left: 20px;
+}
+
+td:nth-child(5)::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #999;
+}
+
+td:nth-child(5):contains('Đang chờ')::before {
+    background-color: #e67e22;
+}
+
+td:nth-child(5):contains('Đã xử lý')::before {
+    background-color: #27ae60;
+}
+
+td:nth-child(5):contains('Từ chối')::before {
+    background-color: #e74c3c;
+}
+
+/* CSS bổ sung để xử lý trạng thái báo cáo với class */
+.status-pending {
+    color: #e67e22;
+}
+
+.status-pending::before {
+    background-color: #e67e22;
+}
+
+.status-resolved {
+    color: #27ae60;
+}
+
+.status-resolved::before {
+    background-color: #27ae60;
+}
+
+.status-rejected {
+    color: #e74c3c;
+}
+
+.status-rejected::before {
+    background-color: #e74c3c;
+}
+
+/* Thêm thanh tìm kiếm và bộ lọc */
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+}
+
+.search-box button {
+    border-radius: 0 4px 4px 0;
+    padding: 8px 15px;
+}
+
+.filter-options {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-options select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+    background-color: white;
+}
+
+/* Thêm hiệu ứng loading */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 10px;
+}
+
+/* Nút xem chi tiết */
+.view-details {
+    background-color: #2ecc71;
+    margin-right: 5px;
+}
+
+.view-details:hover {
+    background-color: #27ae60;
+}
+
+/* Modal popup cho chi tiết báo cáo */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 5px;
+    width: 70%;
+    max-width: 700px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+    animation: modalFadeIn 0.3s;
+}
+
+@keyframes modalFadeIn {
+    from {opacity: 0; transform: translateY(-30px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 10px;
+}
+
+.close:hover {
+    color: black;
+}
+
+.modal-header {
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.modal-footer {
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
+
+.detail-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.detail-label {
+    font-weight: bold;
+    width: 150px;
+    color: #2c3e50;
+}
+
+.detail-value {
+    flex: 1;
+}
+
+/* Phân trang */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.pagination a {
+    color: #2c3e50;
+    padding: 8px 16px;
+    text-decoration: none;
+    border: 1px solid #ddd;
+    margin: 0 4px;
+    border-radius: 4px;
+}
+
+.pagination a.active {
+    background-color: #3498db;
+    color: white;
+    border: 1px solid #3498db;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #f1f1f1;
+}

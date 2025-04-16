@@ -64,7 +64,22 @@ const reportNovel = (userID, novelID, reason) => {
 };
 
 
-async function findNovelsWithFilter(title, author, genre) {
+// Trong file novelModel.js
+async function findNovelsWithFilter(title, author, genre, page = 1, limit = 10) {
+    // Tính offset dựa trên trang hiện tại và giới hạn
+    const offset = (page - 1) * limit;
+    
+    // Truy vấn để đếm tổng số tiểu thuyết thỏa mãn điều kiện
+    let countSql = `
+        SELECT COUNT(DISTINCT n.NovelID) AS total
+        FROM Novels n
+        LEFT JOIN Users u ON n.AuthorID = u.UserID
+        LEFT JOIN NovelGenres ng ON n.NovelID = ng.NovelID
+        LEFT JOIN Genres g ON ng.GenreID = g.GenreID
+        WHERE 1=1
+    `;
+
+    // Truy vấn để lấy dữ liệu tiểu thuyết với phân trang
     let sql = `
         SELECT 
             n.NovelID, 
@@ -88,26 +103,46 @@ async function findNovelsWithFilter(title, author, genre) {
     `;
 
     const params = [];
+    const countParams = [];
 
+    // Thêm các điều kiện tìm kiếm
     if (title) {
-        sql += " AND n.Title LIKE ?";
+        const condition = " AND n.Title LIKE ?";
+        sql += condition;
+        countSql += condition;
         params.push(`%${title}%`);
+        countParams.push(`%${title}%`);
     }
 
     if (author) {
-        sql += " AND u.UserID = ?";
+        const condition = " AND u.UserID = ?";
+        sql += condition;
+        countSql += condition;
         params.push(author);
+        countParams.push(author);
     }
 
     if (genre) {
-        sql += " AND g.GenreID = ?";
+        const condition = " AND g.GenreID = ?";
+        sql += condition;
+        countSql += condition;
         params.push(genre);
+        countParams.push(genre);
     }
 
-    sql += " GROUP BY n.NovelID";
+    // Hoàn thiện truy vấn
+    sql += " GROUP BY n.NovelID ORDER BY n.NovelID ASC LIMIT ? OFFSET ?";
+    params.push(limit, offset);
 
+    // Thực hiện cả hai truy vấn
+    const [countResult] = await pool.query(countSql, countParams);
     const [novels] = await pool.query(sql, params);
-    return novels;
+
+    // Trả về kết quả cùng với tổng số bản ghi
+    return {
+        novels,
+        totalCount: countResult[0].total
+    };
 }
 
 async function getAllAuthors() {

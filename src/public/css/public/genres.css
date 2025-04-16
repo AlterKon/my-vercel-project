@@ -1,0 +1,188 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background-color: #f8f9fa;
+    color: #333;
+  }
+  
+  main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  
+  /* Tiêu đề trang */
+  h2 {
+    font-size: 32px;
+    margin-bottom: 40px;
+    color: #333;
+    position: relative;
+    padding-bottom: 15px;
+    text-align: center;
+  }
+  
+  h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background-color: #5271ff;
+  }
+  
+  /* Danh sách thể loại */
+  .genres-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+  }
+  
+  /* Card thể loại */
+  .genre-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .genre-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+    background-color: #5271ff;
+  }
+  
+  .genre-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  .genre-card h3 a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s;
+    display: block;
+  }
+  
+  .genre-card:hover h3 a {
+    color: white;
+  }
+  
+  /* Hiệu ứng thêm cho card */
+  .genre-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #5271ff;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: center;
+  }
+  
+  .genre-card:hover::after {
+    transform: scaleX(1);
+  }
+  
+  /* Thêm hiệu ứng trước và sau với icons */
+  .genre-card::before {
+    content: '📚';
+    font-size: 24px;
+    display: block;
+    margin-bottom: 15px;
+    opacity: 0.8;
+    transition: transform 0.3s ease;
+  }
+  
+  .genre-card:hover::before {
+    transform: translateY(-5px);
+  }
+  
+  /* Animation cho loading */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .genre-card {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+  }
+  
+  /* Thêm delay cho animation */
+  .genre-card:nth-child(1) { animation-delay: 0.05s; }
+  .genre-card:nth-child(2) { animation-delay: 0.1s; }
+  .genre-card:nth-child(3) { animation-delay: 0.15s; }
+  .genre-card:nth-child(4) { animation-delay: 0.2s; }
+  .genre-card:nth-child(5) { animation-delay: 0.25s; }
+  .genre-card:nth-child(6) { animation-delay: 0.3s; }
+  .genre-card:nth-child(7) { animation-delay: 0.35s; }
+  .genre-card:nth-child(8) { animation-delay: 0.4s; }
+  .genre-card:nth-child(9) { animation-delay: 0.45s; }
+  .genre-card:nth-child(10) { animation-delay: 0.5s; }
+  /* Có thể thêm nhiều hơn nếu cần */
+  
+  /* Thiết kế đáp ứng */
+  @media (max-width: 992px) {
+    .genres-list {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    h2 {
+      font-size: 28px;
+    }
+    
+    .genres-list {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+    }
+    
+    .genre-card {
+      padding: 20px 15px;
+    }
+    
+    .genre-card h3 {
+      font-size: 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    h2 {
+      font-size: 24px;
+    }
+    
+    .genres-list {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    
+    .genre-card {
+      padding: 15px 10px;
+    }
+    
+    .genre-card h3 {
+      font-size: 14px;
+    }
+    
+    .genre-card::before {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+  }

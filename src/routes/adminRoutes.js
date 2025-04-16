@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middlewares/authMiddleware')
+const {StatisticalHomePage} = require('../controllers/admin/statisticalController');
 const {FindByName, AddNewUser, UpdateUser, DeleteUser} = require('../controllers/admin/userController');
 const {FindNovels, UpdateNovel, LockNovel, DeleteNovel} = require('../controllers/admin/novelController');
 const {GenresHomePage, AddNewGenre, UpdateGenre, DeleteGenre} = require('../controllers/admin/genreController');
@@ -8,6 +9,8 @@ const {TransactionHomePage, UpdateTransactionStatus} = require('../controllers/a
 const {DiscussionHomePage, DeleteDiscussion} = require('../controllers/admin/discussionController');
 const {ReportHomePage, ResolveReport} = require('../controllers/admin/reportController');
 const {SubscriptionHomePage, AddNewSubscription, UpdateSubscription, DeleteSubscription} = require('../controllers/admin/subcriptionController');
+
+router.get('/Statistical',auth.isAuthenticated, StatisticalHomePage);
 
 //Quản lý người dùng
 router.get('/Users',auth.isAuthenticated, FindByName);
@@ -34,7 +37,7 @@ router.get('/Discussions', auth.isAuthenticated, DiscussionHomePage);
 router.post("/Discussions/delete/:discussionID", DeleteDiscussion);
 //Quản lý báo cáo
 router.get('/Reports', auth.isAuthenticated, ReportHomePage);
-router.post('/resolve-report/:reportID',ResolveReport);
+router.post('/ResolveReport/:type/:reportID', ResolveReport);
 //Quản lý gói đọc
 router.get('/SubscriptionPlans', auth.isAuthenticated, SubscriptionHomePage);
 router.post('/create-subscription', AddNewSubscription);

@@ -3,20 +3,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        button { padding: 5px 10px; cursor: pointer; }
-        .resolved { background-color: #4CAF50; color: white; } /* Màu xanh cho xác nhận */
-        .deleted { background-color: #f44336; color: white; } /* Màu đỏ cho xóa */
-        .disabled { background-color: #ddd; cursor: not-allowed; }
-    </style>
+    <link rel="stylesheet" href="/css/admin/discussionManage.css">
 </head>
 <body>
     <div class="topnav">
         <a href="/"><img src="/public/logo.png" alt="Logo"></a>
+        <a href="/Admin/Statistical">Thống kê</a>
         <a href="/Admin/Users">Tài khoản</a>
         <a href="/Admin/Novels">Tiểu thuyết</a>
         <a href="/Admin/Genres">Thể loại</a>
@@ -29,7 +21,7 @@
                 <% if (currentUser.role === 'admin') { %>
                     <a href="/Admin/Users">Quản lý</a>
                 <% } %>
-                <a href="/profile/<%= currentUser.id %>">Cá nhân</a>
+                <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
                 <a href="/logout">Đăng xuất</a>
             <% } else { %>
                 <a href="/login">Đăng nhập</a>

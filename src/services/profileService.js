@@ -1,5 +1,7 @@
 const profileModel = require("../models/profileModel");
+const novelModel = require("../models/novelModel");
 const momoService = require('../services/momoService');
+const pool = require('../config/database');
 
 const getUserProfileData = async (userID) => {
     const [[user]] = await profileModel.getUserById(userID);
@@ -79,8 +81,14 @@ const buyReadingPlan = async (userID, planId, paymentMethod, proofImage) => {
 };
 
 const getGenres = async () => {
-    const [genres] = await novelModel.getAllGenres();
-    return genres;
+    try {
+        const [rows] = await pool.query('SELECT GenreID, GenreName FROM genres');
+        
+        return rows;
+      } catch (error) {
+        console.error('Error fetching genres:', error);
+        return [];
+      }
 };
 
 const createNovel = async (data, userID) => {

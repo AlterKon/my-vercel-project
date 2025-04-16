@@ -1,0 +1,192 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background-color: #f8f9fa;
+    color: #333;
+  }
+  
+  main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  
+  /* Tiêu đề trang */
+  h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+    color: #333;
+    position: relative;
+    padding-bottom: 15px;
+    text-align: center;
+  }
+  
+  h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background-color: #5271ff;
+  }
+  
+  /* Danh sách thể loại */
+  .genres-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+  }
+  
+  /* Card thể loại */
+  .genre-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  .genre-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.03);
+    z-index: 1;
+  }
+  
+  .genre-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .genre-card:hover::before {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .genre-card h3 {
+    text-align: center;
+    z-index: 2;
+    width: 100%;
+    padding: 0 15px;
+  }
+  
+  .genre-card h3 a {
+    color: #333;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.2s;
+    display: block;
+    padding: 15px;
+    border-radius: 5px;
+  }
+  
+  .genre-card h3 a:hover {
+    color: #5271ff;
+  }
+  
+  /* Các gradient màu khác nhau cho từng thể loại */
+  .genre-card:nth-child(6n+1) {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  .genre-card:nth-child(6n+2) {
+    background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+  }
+  
+  .genre-card:nth-child(6n+3) {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+  
+  .genre-card:nth-child(6n+4) {
+    background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+  }
+  
+  .genre-card:nth-child(6n+5) {
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+  }
+  
+  .genre-card:nth-child(6n+6) {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+  }
+  
+  /* Animation cho loading */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .genre-card {
+    animation: fadeIn 0.6s ease forwards;
+    opacity: 0;
+  }
+  
+  /* Delay animation cho từng card */
+  .genre-card:nth-child(1) { animation-delay: 0.05s; }
+  .genre-card:nth-child(2) { animation-delay: 0.1s; }
+  .genre-card:nth-child(3) { animation-delay: 0.15s; }
+  .genre-card:nth-child(4) { animation-delay: 0.2s; }
+  .genre-card:nth-child(5) { animation-delay: 0.25s; }
+  .genre-card:nth-child(6) { animation-delay: 0.3s; }
+  .genre-card:nth-child(7) { animation-delay: 0.35s; }
+  .genre-card:nth-child(8) { animation-delay: 0.4s; }
+  /* ... và tiếp tục nếu cần */
+  
+  /* Thiết kế đáp ứng */
+  @media (max-width: 992px) {
+    .genres-list {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  }
+  
+  @media (max-width: 768px) {
+    h2 {
+      font-size: 28px;
+    }
+    
+    .genres-list {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+    }
+    
+    .genre-card h3 a {
+      font-size: 16px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    h2 {
+      font-size: 24px;
+    }
+    
+    .genres-list {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+    
+    .genre-card {
+      height: 100px;
+    }
+    
+    .genre-card h3 a {
+      font-size: 14px;
+      padding: 10px;
+    }
+  }

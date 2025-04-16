@@ -16,8 +16,7 @@ const ReportHomePage = async (req, res) => {
 
 const ResolveReport = async (req, res) => {
     try {
-        const { reportID } = req.params;
-        const { type } = req.query;
+        const { reportID, type } = req.params;
 
         const [result] = await reportService.resolveReportByType(reportID, type);
 

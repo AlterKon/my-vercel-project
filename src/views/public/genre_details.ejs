@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/css/public/genre_details.css">
+
 <main>
     <h2>Thể loại: <%= genre.GenreName %></h2>
 <p><%= genre.Description %></p>
@@ -20,30 +22,6 @@
     <% } %>
 </div>
 </main>
-
-<style>
-    .novel-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-    }
-    .novel-card {
-        padding: 15px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        text-align: center;
-        transition: 0.3s;
-        background: #f9f9f9;
-    }
-    .novel-card img {
-        width: 100%;
-        height: auto;
-        border-radius: 5px;
-    }
-    .novel-card:hover {
-        background: #e0e0e0;
-    }
-</style>
 
 <script>
     function checkNovelLocked(event, novelId, locked) {

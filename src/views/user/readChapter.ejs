@@ -1,0 +1,77 @@
+<link rel="stylesheet" href="/css/user/readChapter.css">
+
+<main id="chapter-container" <% if (!hasOwnership && chapter.ChapterNumber >= 5) { %> style="display: none;" <% } %>>
+    <div>
+        <div>
+            <h1><%= novel.Title %> - Chương <%= chapter.ChapterNumber %>: <%= chapter.Title %></h1>
+        </div>
+    </div>
+        
+    <article>
+        <% chapter.Content.split('\n').forEach(function(paragraph) { %>
+            <% if (paragraph.trim().length > 0) { %>
+                <p><%= paragraph %></p>
+            <% } %>
+        <% }); %>
+    </article>
+
+    <div class="chapter-navigation">
+        <% if (chapter.ChapterNumber > 1) { %>
+            <a href="/user/read/<%= novel.NovelID %>/chapter/<%= chapter.ChapterNumber - 1 %>" class="btn">◀ Chương trước</a>
+        <% } %>
+        <div>
+            <a href="/" class="btn">Trang chủ</a>
+        </div>
+        <div>
+            <button id="bookmark-btn" class="btn">
+                <% if (isBookmarked) { %>
+                    Đã đánh dấu
+                <% } else { %>
+                    Đánh dấu chương này
+                <% } %>
+            </button>
+            </div>
+        <% if (chapter.ChapterNumber < novel.TotalChapters) { %>
+            <a href="/user/read/<%= novel.NovelID %>/chapter/<%= chapter.ChapterNumber + 1 %>" class="btn">Chương sau ▶</a>
+        <% } %>
+    </div>
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const hasOwnership = <%= hasOwnership %>;
+        const chapterNumber = <%= chapter.ChapterNumber %>;
+
+        if (!hasOwnership && chapterNumber >= 5) {
+            alert("Bạn cần sở hữu tiểu thuyết này để đọc tiếp!");
+            window.location.href = "/novels/<%= novel.NovelID %>"; // Redirect to novel purchase page
+        }
+
+        const bookmarkBtn = document.getElementById("bookmark-btn");
+        const novelID = "<%= novel.NovelID %>";
+        const isBookmarked = <%= isBookmarked %>;
+
+        bookmarkBtn.addEventListener("click", function () {
+            fetch("/bookmark", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ novelID, chapterNumber }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    bookmarkBtn.textContent = data.isBookmarked ? 'Đã đánh dấu' : 'Đánh dấu chương này';
+                } else {
+                    alert("Có lỗi xảy ra, vui lòng thử lại.");
+                }
+            })
+            .catch(error => {
+                console.error("Lỗi:", error);
+                alert("Có lỗi xảy ra, vui lòng thử lại.");
+            });
+        });
+    });
+</script>
