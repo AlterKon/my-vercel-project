@@ -73,7 +73,7 @@ const createTransaction = async (userID, planID, method, transactionCode, proofI
 
 const getGenres = async () => {
     try {
-        const [rows] = await pool.query('SELECT GenreID, GenreName FROM genres');
+        const [rows] = await pool.query('SELECT GenreID, GenreName FROM Genres');
         
         return rows;
       } catch (error) {
