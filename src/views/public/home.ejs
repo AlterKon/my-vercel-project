@@ -3,14 +3,14 @@
 <main>
     <div class="banner">
         <div class="slider">
-            <div class="slide active">
-                <img src="/images/slider1.jpg" alt="Tiểu thuyết 1">
-                <div class="caption">Tiểu thuyết nổi bật 1</div>
-            </div>
-            <div class="slide">
-                <img src="/images/slider2.jpg" alt="Tiểu thuyết 2">
-                <div class="caption">Tiểu thuyết nổi bật 2</div>
-            </div>
+            <% randomNovels.forEach((novel, index) => { %>
+                <div class="slide <%= index === 0 ? 'active' : '' %>">
+                    <a href="/novels/<%= novel.NovelID %>">
+                        <img src="<%= novel.CoverImage %>" alt="<%= novel.Title %>">
+                    </a>
+                  <div class="caption"><%= novel.Title %></div>
+                </div>
+              <% }) %>
             <button class="prev" onclick="prevSlide()">&#10094;</button>
             <button class="next" onclick="nextSlide()">&#10095;</button>
         </div>
@@ -42,13 +42,13 @@
             <div class="discussion-list">
                 <% latestDiscussions.forEach(discussion => { %>
                     <div class="discussion-item">
-                        <h3><a href="/Discussions/<%= discussion.DiscussionID %>"><%= discussion.Title %></a></h3>
+                        <h3><a href="/discussions/<%= discussion.DiscussionID %>"><%= discussion.Title %></a></h3>
                         <p><%= discussion.Author %> • <%= discussion.CreatedAt.toLocaleDateString() %></p>
                         <p><%= discussion.Summary %></p>
                     </div>
                 <% }) %>
             </div>
-            <a href="/Discussions" class="view-more">Xem thêm...</a>
+            <a href="/discussions" class="view-more">Xem thêm...</a>
         </div>
     </div>
     

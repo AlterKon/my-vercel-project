@@ -12,7 +12,7 @@ const FindByName = async (req, res) => {
 
         res.render("admin/userManage.ejs", {
             listUsers: users,
-            searchQuery: query,
+            searchQuery: query || "",
             currentUser: req.session.user
         });
     } catch (error) {
@@ -24,11 +24,15 @@ const FindByName = async (req, res) => {
 const AddNewUser = async (req, res) => {
     try {
         const { email, username, password } = req.body;
+
         await authService.registerUser(username, email, password);
+
         res.redirect("/Admin/Users");
     } catch (error) {
-        console.error("Lỗi khi tạo người dùng:", error);
-        res.status(400).json({ message: error.message || "Lỗi server!" });
+        res.status(500).render('admin/userManage', {
+            message: "Lỗi server khi tạo người dùng!",
+            currentUser: req.session.user
+        });
     }
 };
 

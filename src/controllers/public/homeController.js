@@ -2,13 +2,14 @@ const novelService = require('../../services/novelService');
 const discussionService = require('../../services/discussionService');
 const HomePage = async (req, res) => {
     try {
-        const { latestNovels, popularNovels, novels } = await novelService.getHomePageData();
+        const { randomNovels, latestNovels, popularNovels, novels } = await novelService.getHomePageData();
         const {latestDiscussions} = await discussionService.getHomePageData();
 
         res.render("partials/layout", {
             content: '../public/home',
             title: "Trang Chủ",
             currentUser: req.session.user || null,
+            randomNovels,
             latestNovels,
             popularNovels,
             novels,

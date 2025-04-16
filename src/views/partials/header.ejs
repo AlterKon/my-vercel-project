@@ -33,7 +33,7 @@
         <div class="user-menu">
             <% if (typeof currentUser !== 'undefined' && currentUser) { %>
                 <% if (currentUser.role === 'admin') { %>
-                    <a href="/Admin/Users">Quản lý</a>
+                    <a href="/Admin/Statistical">Quản lý</a>
                 <% } %>
                 <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
                 <a href="/user/logout">Đăng xuất</a>

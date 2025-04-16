@@ -1,594 +1,470 @@
-/* === CSS CHO TRANG HỒ SƠ NGƯỜI DÙNG === */
+/* Base styles and reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-/* Thiết lập chung */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f5f5f5;
+}
+
 main {
   max-width: 1200px;
   margin: 0 auto;
   padding: 30px 20px;
-  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  color: #333;
-  line-height: 1.6;
 }
 
-h2, h3, h1 {
-  color: #2c3e50;
-  margin-top: 30px;
-  margin-bottom: 20px;
-  font-weight: 600;
+a {
+  text-decoration: none;
+  color: #0066cc;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #004080;
+  text-decoration: underline;
+}
+
+h1, h2, h3 {
+  margin-bottom: 15px;
+  color: #333;
 }
 
 h2 {
-  font-size: 28px;
-  border-bottom: 2px solid #eee;
+  font-size: 2rem;
+  border-bottom: 2px solid #0066cc;
   padding-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 h3 {
-  font-size: 22px;
+  font-size: 1.4rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 40px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
-/* Thông tin người dùng */
-.user-info {
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+p {
+  margin-bottom: 10px;
 }
 
-.user-info p {
-  margin: 10px 0;
-  padding: 5px 0;
-  border-bottom: 1px dashed #eee;
+/* Profile info section */
+.profile-info p {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
 }
 
-.user-info p:last-child {
-  border-bottom: none;
+/* Password change section */
+#togglePasswordBtn {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 20px 0;
+  transition: background-color 0.3s ease;
 }
 
-.user-status {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
+#togglePasswordBtn:hover {
+  background-color: #004080;
 }
 
-.status-active {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.status-banned {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-.role-tag {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.role-admin {
-  background-color: #cce5ff;
-  color: #004085;
-}
-
-.role-user {
-  background-color: #e2e3e5;
-  color: #383d41;
-}
-
-/* Form đổi mật khẩu */
 #changePasswordForm {
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: #f9f9f9;
   padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  margin: 20px 0;
   max-width: 500px;
+  border: 1px solid #ddd;
+}
+
+#changePasswordForm h3 {
+  margin-top: 0;
+  border-bottom: none;
 }
 
 #changePasswordForm label {
   display: block;
-  margin: 10px 0 5px;
-  font-weight: 500;
+  margin-bottom: 5px;
+  font-weight: 600;
 }
 
-#changePasswordForm input {
+#changePasswordForm input[type="password"] {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
   margin-bottom: 15px;
-}
-
-#changePasswordForm input:focus {
-  outline: none;
-  border-color: #4d90fe;
-  box-shadow: 0 0 5px rgba(77, 144, 254, 0.5);
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 #changePasswordForm button {
-  padding: 10px 20px;
-  background-color: #4d90fe;
+  background-color: #0066cc;
   color: white;
   border: none;
-  border-radius: 5px;
+  padding: 10px 20px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  transition: background-color 0.3s ease;
 }
 
 #changePasswordForm button:hover {
-  background-color: #357ae8;
+  background-color: #004080;
 }
 
-/* Danh sách tiểu thuyết */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
+/* Novel sections */
 .novel-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
   margin-bottom: 40px;
 }
 
 .novel-card {
-  background-color: #fff;
+  background-color: white;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .novel-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .novel-card img {
   width: 100%;
-  height: 250px;
+  height: 280px;
   object-fit: cover;
-  border-bottom: 1px solid #eee;
 }
 
 .novel-card h3 {
-  font-size: 16px;
-  margin: 15px 15px 10px;
-  font-weight: 600;
+  padding: 15px 15px 5px;
+  margin: 0;
+  font-size: 1.1rem;
+  border-bottom: none;
 }
 
 .novel-card p {
-  font-size: 13px;
+  padding: 0 15px 15px;
+  font-size: 0.9rem;
   color: #666;
-  margin: 0 15px 15px;
 }
 
-.novel-card a {
-  color: #2c3e50;
-  text-decoration: none;
-}
-
-.novel-card a:hover {
-  color: #4d90fe;
-}
-
+/* Add chapter button */
 .add-chapter-btn {
   display: block;
+  margin: 0 15px 15px;
+  padding: 8px 15px;
+  background-color: #0066cc;
+  color: white;
   text-align: center;
-  margin: 10px 15px 15px;
-  padding: 8px;
-  background-color: #4d90fe;
-  color: white !important;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 14px;
-  transition: background-color 0.2s;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 .add-chapter-btn:hover {
-  background-color: #357ae8;
+  background-color: #004080;
+  text-decoration: none;
+}
+
+/* Action buttons */
+#add-novel-btn, #upload-novel-btn {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+#add-novel-btn:hover, #upload-novel-btn:hover {
+  background-color: #004080;
 }
 
 /* Bookmark list */
 .bookmark-list {
-  background-color: #fff;
-  border-radius: 8px;
+  background-color: white;
   padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .bookmark-list h1 {
-  font-size: 24px;
-  margin-top: 0;
+  font-size: 1.6rem;
+  margin-bottom: 20px;
 }
 
 .bookmark-list ul {
-  list-style: none;
-  padding: 0;
+  list-style-type: none;
 }
 
 .bookmark-list li {
-  padding: 10px 15px;
+  padding: 12px 0;
   border-bottom: 1px solid #eee;
-  transition: background-color 0.2s;
 }
 
-.bookmark-list li:hover {
-  background-color: #f8f9fa;
+.bookmark-list li:last-child {
+  border-bottom: none;
 }
 
-.bookmark-list a {
-  text-decoration: none;
-  color: #333;
-  display: flex;
-  align-items: center;
-}
-
-.bookmark-list a:hover {
-  color: #4d90fe;
-}
-
-.bookmark-list a::before {
-  content: "📖";
-  margin-right: 10px;
-}
-
-/* Transaction history */
+/* Transaction table */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 30px;
-  background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin: 20px 0 40px;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   border-radius: 8px;
   overflow: hidden;
 }
 
-table th, table td {
+th, td {
   padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
-table th {
-  background-color: #f8f9fa;
+th {
+  background-color: #f5f5f5;
   font-weight: 600;
-  color: #555;
 }
 
-table tr:last-child td {
+tr:last-child td {
   border-bottom: none;
 }
 
-table tr:hover {
-  background-color: #f8f9fa;
+/* Subscription plans */
+.subscription-plans {
+  margin: 40px 0;
 }
 
-/* Income section */
-.income-section {
-  background-color: #e8f5e9;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+.plans-table {
+  width: 100%;
 }
 
-.income-section h3 {
-  color: #2e7d32;
-  margin: 0;
-}
-
-/* Purchase plan forms */
-.plans-container {
-  margin-bottom: 30px;
-}
-
-.plan-card {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.plan-info {
-  flex: 1;
-}
-
-.plan-name {
-  font-weight: 600;
-  font-size: 18px;
-  margin: 0 0 5px 0;
-}
-
-.plan-price {
-  color: #4d90fe;
-  font-weight: 600;
-  font-size: 16px;
-}
-
-.plan-details {
-  color: #666;
-  font-size: 14px;
-}
-
-form[id^="form-"] {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-form[id^="form-"] select {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-form[id^="form-"] input[type="file"] {
-  width: 180px;
-}
-
-form[id^="form-"] button {
-  padding: 8px 20px;
-  background-color: #4d90fe;
+.btn-purchase {
+  background-color: #28a745;
   color: white;
   border: none;
-  border-radius: 5px;
+  padding: 8px 15px;
+  border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* Buttons */
-button {
-  cursor: pointer;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+.btn-purchase:hover {
+  background-color: #218838;
 }
 
-#add-novel-btn, #upload-novel-btn {
-  background-color: #4d90fe;
-  color: white;
-  font-size: 14px;
-}
-
-#add-novel-btn:hover, #upload-novel-btn:hover {
-  background-color: #357ae8;
-}
-
-/* Modal */
+/* Modal styles */
 .modal {
+  display: none;
   position: fixed;
-  top: 0;
+  z-index: 1000;
   left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  display: none; /* Ẩn ban đầu */
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal.show {
-  display: flex;
+  overflow: auto;
 }
 
 .modal-content {
   background-color: white;
-  padding: 30px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 500px;
-  position: relative;
+  margin: 10% auto;
+  padding: 25px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
 .close-modal, .close-qr, .close-upload {
   position: absolute;
-  top: 15px;
   right: 20px;
+  top: 15px;
   font-size: 24px;
   cursor: pointer;
   color: #999;
-  transition: color 0.2s;
 }
 
 .close-modal:hover, .close-qr:hover, .close-upload:hover {
   color: #333;
 }
 
-/* Payment Modal */
-#payment-form .form-group {
+/* Payment form */
+.form-group {
   margin-bottom: 20px;
 }
 
-#payment-form label {
+.form-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-#payment-form select {
+.form-group select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
 }
 
 .payment-details {
-  background-color: #f8f9fa;
   padding: 15px;
-  border-radius: 5px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
   margin-bottom: 20px;
 }
 
-#payment-info-text p {
-  margin: 8px 0;
+.plan-name, .plan-price {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
 }
 
-/* QR Modal */
+/* QR Code modal */
 .qr-header {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  flex-direction: column;
 }
 
 .payment-logo {
-  width: 60px;
+  width: 50px;
   height: auto;
   margin-right: 15px;
-  margin-bottom: 10px;
 }
 
 .qr-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
 
 #qr-image {
-  width: 250px;
-  height: 250px;
-  border: 1px solid #eee;
-  padding: 10px;
-  background-color: white;
+  max-width: 250px;
   margin-bottom: 20px;
 }
 
 .qr-info {
   text-align: center;
-  margin-bottom: 20px;
+}
+
+.qr-info p {
+  margin-bottom: 10px;
 }
 
 #qr-transaction-id {
-  font-family: monospace;
-  background-color: #f5f5f5;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 15px 0;
-  font-size: 14px;
-  word-break: break-all;
+  font-weight: bold;
+  color: #0066cc;
 }
 
 #qr-instruction {
-  font-size: 14px;
-  color: #666;
+  font-style: italic;
 }
 
-/* Upload Modal */
+/* File upload */
 .file-upload-container {
   position: relative;
   margin-bottom: 15px;
 }
 
-#proofImage {
+input[type="file"] {
   position: absolute;
-  width: 0.1px;
-  height: 0.1px;
+  left: 0;
+  top: 0;
   opacity: 0;
-  overflow: hidden;
-  z-index: -1;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }
 
 .file-upload-label {
-  display: inline-block;
-  padding: 10px 15px;
-  background-color: #f8f9fa;
-  color: #333;
+  display: block;
+  padding: 12px 20px;
+  background-color: #f5f5f5;
   border: 1px dashed #ccc;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100%;
+  border-radius: 4px;
   text-align: center;
-  transition: all 0.3s;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .file-upload-label:hover {
-  background-color: #e8e8e8;
-  border-color: #999;
-}
-
-.file-upload-label i {
-  margin-right: 8px;
+  background-color: #e5e5e5;
 }
 
 .image-preview {
   margin-top: 15px;
+  max-width: 100%;
   text-align: center;
 }
 
-.image-preview img {
+.preview-image {
   max-width: 100%;
-  max-height: 200px;
-  border: 1px solid #eee;
-  border-radius: 5px;
+  max-height: 300px;
+  border-radius: 4px;
 }
 
-/* Form Buttons */
+/* Action buttons */
 .form-buttons {
   display: flex;
-  justify-content: center;
-  gap: 15px;
+  justify-content: flex-end;
+  gap: 10px;
   margin-top: 20px;
 }
 
 .form-buttons button {
   padding: 10px 20px;
-  border-radius: 5px;
-  font-weight: 500;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
 }
 
 .form-buttons button:first-child {
-  background-color: #4d90fe;
+  background-color: #0066cc;
   color: white;
 }
 
-
 .form-buttons button:first-child:hover {
-  background-color: #357ae8;
+  background-color: #004080;
 }
 
 .btn-cancel {
-  background-color: #f1f1f1;
+  background-color: #f5f5f5;
   color: #333;
 }
 
 .btn-cancel:hover {
-  background-color: #e0e0e0;
+  background-color: #e5e5e5;
 }
 
 .btn-confirm {
-  background-color: #4d90fe;
+  background-color: #28a745;
   color: white;
 }
 
 .btn-confirm:hover {
-  background-color: #357ae8;
+  background-color: #218838;
 }
 
 .qr-actions {
@@ -597,117 +473,88 @@ button {
   gap: 15px;
 }
 
-.btn-purchase {
-  background-color: #4d90fe;
-  color: white;
+.qr-actions button {
+  padding: 10px 20px;
   border: none;
-  border-radius: 5px;
-  padding: 8px 15px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  font-size: 1rem;
 }
 
-.btn-purchase:hover {
-  background-color: #357ae8;
-}
-
-/* Alert Container */
+/* Alert container */
 #alert-container {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 1050;
-}
-
-.alert {
-  padding: 15px 20px;
-  margin-bottom: 15px;
-  border-radius: 5px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 300px;
-  animation: slideIn 0.3s ease-out;
-}
-
-.alert-success {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.alert-error {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-.alert-close {
-  cursor: pointer;
-  font-size: 20px;
-  margin-left: 15px;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  z-index: 2000;
 }
 
 /* Responsive adjustments */
+@media (max-width: 992px) {
+  .novel-list {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+  
+  .novel-card img {
+    height: 250px;
+  }
+}
+
 @media (max-width: 768px) {
   .novel-list {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
   }
   
   .novel-card img {
     height: 200px;
   }
   
-  .plan-card {
-    flex-direction: column;
-    align-items: flex-start;
+  .modal-content {
+    width: 90%;
+    padding: 20px;
   }
   
-  form[id^="form-"] {
-    margin-top: 15px;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.6rem;
   }
   
-  form[id^="form-"] select, 
-  form[id^="form-"] input[type="file"],
-  form[id^="form-"] button {
-    width: 100%;
-    margin-top: 10px;
+  h3 {
+    font-size: 1.2rem;
   }
   
-  .qr-container {
-    flex-direction: column;
-  }
-  
-  #qr-image {
-    width: 200px;
-    height: 200px;
-  }
-  
-  .qr-info {
-    width: 100%;
-    margin-top: 15px;
-  }
-  
-  .qr-actions, .form-buttons {
-    flex-direction: column;
+  .novel-list {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
     gap: 10px;
   }
   
-  .qr-actions button, .form-buttons button {
+  .novel-card img {
+    height: 180px;
+  }
+  
+  .novel-card h3 {
+    font-size: 0.95rem;
+  }
+  
+  #togglePasswordBtn, 
+  #add-novel-btn, 
+  #upload-novel-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .form-buttons {
+    flex-direction: column;
+  }
+  
+  .form-buttons button {
     width: 100%;
   }
 }

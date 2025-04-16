@@ -43,6 +43,7 @@ const ChangePassword = async (req, res) => {
     }
 };
 
+
 const NovelOwnLimit = async (req, res) => {
     try {
       const userID = req.session.user.id;
@@ -59,43 +60,33 @@ const NovelOwnLimit = async (req, res) => {
         message: "Lỗi máy chủ khi kiểm tra lượt sở hữu."
       });
     }
-  };
+};
 
 const UserBuyPlans = async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ success: false, message: "Bạn chưa đăng nhập!" });
-    }
-
-    const userID = req.session.user.id;
-    const { planId, paymentMethod } = req.body;
-    const proofImage = req.file ? req.file.filename : null;
-
     try {
-        const result = await profileService.buyReadingPlan(userID, planId, paymentMethod, proofImage);
-        res.json(result);
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).json({ success: false, message: error.message });
-    }
+        const { planId, paymentMethod, transactionId } = req.body;
+        const userID = req.session.user.id;
+        const proofImage = req.file ? `/images/transactions/${req.file.filename}` : null;
+    
+        await profileService.createTransaction(userID, planId, paymentMethod, transactionId, proofImage);
+        res.status(200).json({ message: 'Giao dịch đã được tạo. Chờ xác nhận!' });
+      } catch (error) {
+        console.error("Lỗi khi mua gói:", error);
+        res.status(500).json({ message: 'Lỗi khi xử lý giao dịch' });
+      }
 };
 
 const AddNovelPage = async (req, res) => {
     try {
         let genres = await profileService.getGenres();
         
-        // Đảm bảo genres là một mảng
         if (genres && !Array.isArray(genres)) {
-            // Nếu genres là object với dữ liệu dạng { rows: [...] }
             if (genres.rows) {
                 genres = genres.rows;
             } else {
-                // Hoặc nếu là object khác, chuyển thành mảng
                 genres = Object.values(genres);
             }
         }
-        
-        // Thêm log để kiểm tra
-        console.log("Genres data:", genres);
         
         res.render('partials/layout', {
             genres,
@@ -111,13 +102,13 @@ const AddNovelPage = async (req, res) => {
 const AddNewNovel = async (req, res) => {
     try {
         const { title, description, genres, status } = req.body;
-        const coverImage = req.file ? `/images/${req.file.filename}` : null;
+        const coverImage = req.file ? `/images/novel/${req.file.filename}` : null;
 
         if (!title || !description || !coverImage) {
             return res.status(400).send("Vui lòng nhập đầy đủ thông tin.");
         }
 
-        await novelService.createNovel({ title, description, status, coverImage, genres }, req.session.user.id);
+        await profileService.createNovel({ title, description, status, coverImage, genres }, req.session.user.id);
         res.redirect('/user/profile');
     } catch (err) {
         console.error("Lỗi khi đăng tải tiểu thuyết:", err);

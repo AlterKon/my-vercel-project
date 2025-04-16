@@ -32,7 +32,6 @@ const AddNovelToLibrary = async (req, res) => {
         const result = await libraryService.addNovelToLibrary(userID, novelID);
         res.json(result);
     } catch (err) {
-        console.error("Lỗi thêm vào thư viện:", err);
         res.status(err.status || 500).json({ success: false, error: err.message || "Lỗi máy chủ" });
     }
 };

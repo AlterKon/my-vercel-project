@@ -3,6 +3,7 @@ const novelModel = require('../models/novelModel');
 const getHomePageData = async () => {
     const latestNovels = await novelModel.getLatestNovels();
     const popularNovels = await novelModel.getPopularNovels();
+    const randomNovels = await novelModel.randomNovels();
     const allNovels = await novelModel.getAllNovels();
     
 
@@ -15,6 +16,7 @@ const getHomePageData = async () => {
     };
 
     return {
+        randomNovels: markLocked(randomNovels),
         latestNovels: markLocked(latestNovels),
         popularNovels: markLocked(popularNovels),
         novels: markLocked(allNovels)

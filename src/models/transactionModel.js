@@ -2,10 +2,15 @@ const pool = require('../config/database')
 
 const getAllTransactions = () => {
     return pool.query(`
-        SELECT t.TransactionID, t.Amount, t.Status, t.PaymentMethod, t.CreatedAt,
+        SELECT 
+            t.TransactionID, 
+            t.Status, 
+            t.PaymentMethod, 
+            t.CreatedAt,
             t.ProofImage,
             u.Username AS UserName, 
-            sp.PlanName AS PlanName
+            sp.PlanName AS PlanName,
+            sp.Price AS Amount
         FROM Transactions t
         LEFT JOIN Users u ON t.UserID = u.UserID
         LEFT JOIN SubscriptionPlans sp ON t.PlanID = sp.PlanID
@@ -14,11 +19,30 @@ const getAllTransactions = () => {
 };
 
 const getTransactionByID = (transactionID) => {
-    return pool.query("SELECT * FROM Transactions WHERE TransactionID = ?", [transactionID]);
+    return pool.query(`
+        SELECT 
+            t.TransactionID, 
+            t.UserID,
+            t.PlanID,
+            t.Status, 
+            t.PaymentMethod, 
+            t.CreatedAt,
+            t.ProofImage,
+            u.Username AS UserName, 
+            sp.PlanName AS PlanName,
+            sp.Price AS Amount
+        FROM Transactions t
+        LEFT JOIN Users u ON t.UserID = u.UserID
+        LEFT JOIN SubscriptionPlans sp ON t.PlanID = sp.PlanID
+        WHERE t.TransactionID = ?;
+    `, [transactionID]);
 };
 
 const updateTransactionStatus = (status, transactionID) => {
-    return pool.query("UPDATE Transactions SET Status = ? WHERE TransactionID = ?", [status, transactionID]);
+    return pool.query(
+        "UPDATE Transactions SET Status = ? WHERE TransactionID = ?", 
+        [status, transactionID]
+    );
 };
 
 const getPlanByID = (planID) => {

@@ -2,6 +2,7 @@ const profileModel = require("../models/profileModel");
 const novelModel = require("../models/novelModel");
 const momoService = require('../services/momoService');
 const pool = require('../config/database');
+const bcrypt = require('bcryptjs');
 
 const getUserProfileData = async (userID) => {
     const [[user]] = await profileModel.getUserById(userID);
@@ -66,18 +67,8 @@ const getNovelOwnLimit = async (userID) => {
     return { success: true, remainingNovels };
 };
 
-const buyReadingPlan = async (userID, planId, paymentMethod, proofImage) => {
-    const [plan] = await profileModel.getSubscriptionPlanById(planId);
-    if (plan.length === 0) {
-        throw new Error("Gói đọc không hợp lệ!");
-    }
-
-    await profileModel.createTransaction(userID, plan[0].PlanID, plan[0].Price, paymentMethod, proofImage);
-
-    return {
-        success: true,
-        message: "Giao dịch đang được xử lý. Vui lòng chờ xác nhận!"
-    };
+const createTransaction = async (userID, planID, method, transactionCode, proofImage) => {
+    return await profileModel.insertTransaction(userID, planID, method, transactionCode, proofImage);
 };
 
 const getGenres = async () => {
@@ -93,12 +84,12 @@ const getGenres = async () => {
 
 const createNovel = async (data, userID) => {
     const { title, description, status, coverImage, genres } = data;
-    const [result] = await novelModel.insertNovel(title, description, coverImage, userID, status);
+    const [result] = await profileModel.insertNovel(title, description, coverImage, userID, status);
     const novelID = result.insertId;
 
     if (Array.isArray(genres)) {
         for (let genreID of genres) {
-            await novelModel.insertNovelGenres(novelID, genreID);
+            await profileModel.insertNovelGenres(novelID, genreID);
         }
     }
 
@@ -114,6 +105,6 @@ const getBookmarkChapter = async (userID, novelID) => {
 };
 
 module.exports = {
-    getUserProfileData, changePassword, getNovelOwnLimit, buyReadingPlan,
+    getUserProfileData, changePassword, getNovelOwnLimit, createTransaction,
     getGenres, createNovel, getBookmarkChapter
 };

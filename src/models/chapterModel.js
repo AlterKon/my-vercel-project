@@ -69,13 +69,21 @@ const updateChapter = (title, content, novelId, chapterNumber) => {
 };
 
 const updateBookmark = (chapterNumber, userID, novelID) => {
-    return pool.query(`UPDATE Bookmarks SET ChapterNumber = ?, CreatedAt = NOW() WHERE UserID = ? AND NovelID = ?`, [chapterNumber, userID, novelID]);
+    return pool.query(`
+        UPDATE Bookmarks 
+        SET ChapterNumber = ?, CreatedAt = NOW() 
+        WHERE UserID = ? AND NovelID = ?`,
+        [chapterNumber, userID, novelID]
+    );
 };
 
 const insertBookmark = (userID, novelID, chapterNumber) => {
-    return pool.query(`INSERT INTO Bookmarks (UserID, NovelID, ChapterNumber, CreatedAt) VALUES (?, ?, ?, NOW())`, [userID, novelID, chapterNumber]);
+    return pool.query(`
+        INSERT INTO Bookmarks (UserID, NovelID, ChapterNumber, CreatedAt) 
+        VALUES (?, ?, ?, NOW())`,
+        [userID, novelID, chapterNumber]
+    );
 };
-
 
 module.exports = {
     getNovelBasicInfo, insertNewChapter,

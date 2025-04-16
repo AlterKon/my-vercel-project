@@ -1,4 +1,4 @@
-const { findUsersByName } = require('../models/userModel');
+const { findUsersByName, deleteUserByID, getUserByID, updateUserByID } = require('../models/userModel');
 
 const searchUsersByName = async (query) => {
     const searchQuery = query.trim() || "";

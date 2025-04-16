@@ -44,6 +44,8 @@ const ChapterDetail = async (req, res) => {
         res.render("partials/layout", {
             content: '../user/readChapter',
             user: req.session.user,
+            novelID: NovelID,
+            chapterNumber: ChapterNumber,
             novel,
             chapter,
             hasOwnership,
@@ -96,10 +98,13 @@ const UpdateChapter = async (req, res) => {
 
 const AddBookMark = async (req, res) => {
     try {
+
+        console.log("Bookmark route called");
         const { novelID, chapterNumber } = req.body;
         const userID = req.session.userID;
 
         const [bookmark] = await chapterModel.getBookmark(userID, novelID);
+        
         if (bookmark.length > 0) {
             await chapterModel.updateBookmark(chapterNumber, userID, novelID);
         } else {

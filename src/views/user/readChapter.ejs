@@ -30,7 +30,7 @@
                     Đánh dấu chương này
                 <% } %>
             </button>
-            </div>
+        </div>
         <% if (chapter.ChapterNumber < novel.TotalChapters) { %>
             <a href="/user/read/<%= novel.NovelID %>/chapter/<%= chapter.ChapterNumber + 1 %>" class="btn">Chương sau ▶</a>
         <% } %>
@@ -38,40 +38,47 @@
 </main>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const hasOwnership = <%= hasOwnership %>;
-        const chapterNumber = <%= chapter.ChapterNumber %>;
+    document.addEventListener('DOMContentLoaded', function () {
 
-        if (!hasOwnership && chapterNumber >= 5) {
-            alert("Bạn cần sở hữu tiểu thuyết này để đọc tiếp!");
-            window.location.href = "/novels/<%= novel.NovelID %>"; // Redirect to novel purchase page
+        const bookmarkBtn = document.getElementById('bookmark-btn');
+        const isBookmarked = <%= JSON.stringify(isBookmarked) %>;
+        const novelID = <%= JSON.stringify(novel.NovelID) %>;
+        const chapterNumber = <%= JSON.stringify(chapter.ChapterNumber) %>;
+
+        if (!bookmarkBtn) return;
+
+        if (isBookmarked) {
+            bookmarkBtn.textContent = "Đã đánh dấu";
+        } else {
+            bookmarkBtn.textContent = "Đánh dấu chương này";
         }
 
-        const bookmarkBtn = document.getElementById("bookmark-btn");
-        const novelID = "<%= novel.NovelID %>";
-        const isBookmarked = <%= isBookmarked %>;
+        bookmarkBtn.addEventListener('click', async function () {
+            console.log("Đã bấm nút bookmark");
 
-        bookmarkBtn.addEventListener("click", function () {
-            fetch("/bookmark", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ novelID, chapterNumber }),
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch('/user/bookmark', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        novelID: novelID,
+                        chapterNumber: chapterNumber,
+                    })
+                });
+
+                const data = await response.json();
+
                 if (data.success) {
-                    alert(data.message);
                     bookmarkBtn.textContent = data.isBookmarked ? 'Đã đánh dấu' : 'Đánh dấu chương này';
                 } else {
-                    alert("Có lỗi xảy ra, vui lòng thử lại.");
+                    alert('Đã xảy ra lỗi khi đánh dấu chương này');
                 }
-            })
-            .catch(error => {
-                console.error("Lỗi:", error);
-                alert("Có lỗi xảy ra, vui lòng thử lại.");
-            });
+            } catch (error) {
+                console.error("Lỗi khi gửi yêu cầu đánh dấu:", error);
+                alert('Lỗi kết nối với máy chủ');
+            }
         });
     });
 </script>

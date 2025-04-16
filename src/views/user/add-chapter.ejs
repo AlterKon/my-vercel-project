@@ -3,7 +3,7 @@
 <main>
     <h2>📖 Thêm chương mới cho "<%= novel.Title %>"</h2>
 
-    <form action="/novels/<%= novel.NovelID %>/add-chapter" method="POST">
+    <form action="/user/novels/<%= novel.NovelID %>/add-chapter" method="POST">
         <label for="ChapterNumber">Số thứ tự chương:</label>
         <input type="number" name="ChapterNumber" id="ChapterNumber" required>
 

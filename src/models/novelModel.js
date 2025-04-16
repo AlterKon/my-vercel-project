@@ -1,5 +1,14 @@
 const pool = require('../config/database');
 
+const randomNovels = async () =>{
+    const [rows] = await pool.execute(`
+    SELECT NovelID, Title, CoverImage
+    FROM Novels
+    ORDER BY RAND()
+    LIMIT 2
+  `);
+    return rows;
+}
 const getLatestNovels = async () => {
     const [rows] = await pool.query("SELECT * FROM Novels ORDER BY CreatedAt DESC LIMIT 6");
     return rows;
@@ -186,7 +195,7 @@ const deleteNovelById = async (NovelID) => {
 };
 
 module.exports = {
-    getLatestNovels, getPopularNovels ,getAllNovels,
+    randomNovels, getLatestNovels, getPopularNovels ,getAllNovels,
     searchNovelsByTitle, 
     getNovelById, getGenresByNovelId, getChaptersByNovelId,
     reportNovel,

@@ -22,7 +22,7 @@
                         <a href="/Admin/Users">Quản lý</a>
                     <% } %>
                     <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
-                    <a href="/logout">Đăng xuất</a>
+                    <a href="/user/logout">Đăng xuất</a>
                 <% } else { %>
                     <a href="/login">Đăng nhập</a>
                     <a href="/register">Đăng ký</a>
@@ -53,8 +53,8 @@
                             <td><%= transaction.Status %></td>
                             <td>
                                 <% if (transaction.ProofImage) { %>
-                                    <a href="/images/transaction/<%= transaction.ProofImage %>" target="_blank">
-                                        <img src="/images/transaction/<%= transaction.ProofImage %>" alt="Ảnh giao dịch" width="80">
+                                    <a href="<%= transaction.ProofImage %>" target="_blank">
+                                        <img src="<%= transaction.ProofImage %>" alt="Ảnh giao dịch" width="80">
                                     </a>
                                 <% } else { %>
                                     <span>Không có ảnh</span>

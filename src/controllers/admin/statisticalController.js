@@ -4,11 +4,12 @@ const StatisticalHomePage = async (req, res) => {
     try {
       const [rows] = await pool.execute(`
         SELECT 
-          DATE_FORMAT(CreatedAt, '%Y-%m') AS Month,
-          SUM(Amount) AS TotalIncome,
+          DATE_FORMAT(t.CreatedAt, '%Y-%m') AS Month,
+          SUM(p.Price) AS TotalIncome,
           COUNT(*) AS TotalTransactions
-        FROM Transactions
-        WHERE Status = 'completed'
+        FROM Transactions t
+        JOIN SubscriptionPlans p ON t.PlanID = p.PlanID
+        WHERE t.Status = 'completed'
         GROUP BY Month
         ORDER BY Month DESC
       `);

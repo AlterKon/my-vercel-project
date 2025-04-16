@@ -1,11 +1,15 @@
 const transactionModel = require("../models/transactionModel");
+const pool = require('../config/database');
 
 const fetchTransactions = () => {
     return transactionModel.getAllTransactions();
 };
 
 const updateTransaction = async (transactionID, status) => {
+    const connection = await pool.getConnection();
     try {
+        await connection.beginTransaction();
+
         const [transactions] = await transactionModel.getTransactionByID(transactionID);
         if (transactions.length === 0) {
             throw new Error("Giao dịch không tồn tại!");
@@ -22,7 +26,6 @@ const updateTransaction = async (transactionID, status) => {
         if (status === 'completed') {
             const [plans] = await transactionModel.getPlanByID(transaction.PlanID);
             if (plans.length === 0) {
-                await connection.rollback();
                 throw new Error("Gói đăng ký không hợp lệ!");
             }
 

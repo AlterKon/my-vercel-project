@@ -36,7 +36,7 @@ const getAllDiscussionsWithCounts = async () => {
                (SELECT COUNT(*) FROM DiscussionComments WHERE DiscussionID = d.DiscussionID) AS CommentCount,
                (SELECT COUNT(*) FROM DiscussionLikes WHERE DiscussionID = d.DiscussionID) AS LikeCount
         FROM Discussions d
-        JOIN Users u ON d.UserID = u.UserID
+        LEFT JOIN Users u ON d.UserID = u.UserID 
         ORDER BY d.CreatedAt DESC
     `);
     return rows;

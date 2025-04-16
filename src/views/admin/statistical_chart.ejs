@@ -9,14 +9,14 @@
         <a href="/Admin/Transactions">Giao dịch</a>
         <a href="/Admin/Discussions">Bài thảo luận</a>
         <a href="/Admin/Reports">Báo cáo</a>
-        <a class="active" href="/Admin/SubscriptionPlans">Gói đọc</a    >
+        <a href="/Admin/SubscriptionPlans">Gói đọc</a>
             <div class="user-menu">
                 <% if (typeof currentUser !== 'undefined' && currentUser) { %>
                     <% if (currentUser.role === 'admin') { %>
                         <a href="/Admin/Users">Quản lý</a>
                     <% } %>
                     <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
-                    <a href="/logout">Đăng xuất</a>
+                    <a href="/user/logout">Đăng xuất</a>
                 <% } else { %>
                     <a href="/login">Đăng nhập</a>
                     <a href="/register">Đăng ký</a>
@@ -24,29 +24,31 @@
             </div>
     </div>
     <div class="container mt-5">
-        <h2 class="mb-4">📊 Thống kê thu nhập theo tháng</h2>
-      
-        <table class="table table-bordered table-hover">
-          <thead class="thead-dark">
+      <h2 class="mb-4 text-center">📊 Thống kê thu nhập theo tháng</h2>
+    
+      <table class="table table-striped table-bordered shadow-sm">
+        <thead class="table-dark text-center">
+          <tr>
+            <th>📅 Tháng</th>
+            <th>💰 Tổng thu nhập (VNĐ)</th>
+            <th>🧾 Số giao dịch</th>
+          </tr>
+        </thead>
+        <tbody class="text-center">
+          <% if (monthlyIncome.length === 0) { %>
             <tr>
-              <th>Tháng</th>
-              <th>Tổng thu nhập (VNĐ)</th>
-              <th>Số giao dịch</th>
+              <td colspan="3" class="text-muted">Không có dữ liệu giao dịch nào.</td>
             </tr>
-          </thead>
-          <tbody>
-            <% if (monthlyIncome.length === 0) { %>
-              <tr><td colspan="3">Không có dữ liệu giao dịch nào.</td></tr>
-            <% } else { %>
-              <% monthlyIncome.forEach(row => { %>
-                <tr>
-                  <td><%= row.Month %></td>
-                  <td><%= row.TotalIncome.toLocaleString() %></td>
-                  <td><%= row.TotalTransactions %></td>
-                </tr>
-              <% }) %>
-            <% } %>
-          </tbody>
-        </table>
-      </div>
+          <% } else { %>
+            <% monthlyIncome.forEach(row => { %>
+              <tr>
+                <td><%= row.Month %></td>
+                <td><%= Number(row.TotalIncome).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) %></td>
+                <td><%= row.TotalTransactions %></td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div> 
 </body>

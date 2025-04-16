@@ -5,7 +5,7 @@ const findUserByUsername = async (username) => {
         "SELECT UserID, Username, Password, Role, Status FROM Users WHERE Username = ?",
         [username]
     );
-    return rows[0]; // Trả về 1 user duy nhất
+    return rows[0];
 };
 
 const findUserByEmail = async (email) => {

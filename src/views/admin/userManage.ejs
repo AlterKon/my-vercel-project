@@ -22,7 +22,7 @@
                     <a href="/Admin/Users">Quản lý</a>
                 <% } %>
                 <a href="/user/profile/<%= currentUser.id %>">Cá nhân</a>
-                <a href="/logout">Đăng xuất</a>
+                <a href="/user/logout">Đăng xuất</a>
             <% } else { %>
                 <a href="/login">Đăng nhập</a>
                 <a href="/register">Đăng ký</a>
@@ -47,31 +47,33 @@
                 </tr>
             </thead>
             <button onclick="openFormAdd()">Thêm Người Dùng</button>
-            <div id="userFormAdd" class="overlay" style="display: none;">
-                <div class="popup">
-                    <form action="/Admin/create-user" method="post">
-                        <fieldset>
-                            <legend>Thêm Người Dùng</legend>
-                            <div class="input-group">
-                                <label>Email:</label>
-                                <input type="text" name="email">
-                            </div>
-                            <div class="input-group">
-                                <label>Tài khoản:</label>
-                                <input type="text" name="username">
-                            </div>
-                            <div class="input-group">
-                                <label>Mật khẩu:</label>
-                                <input type="text" name="password">
-                            </div>
-                            <div>
-                                <button type="submit">Lưu</button>
-                                <button type="button" onclick="closeFormAdd()">Đóng</button>
-                            </div>
-                        </fieldset>
-                    </form>
+
+<div id="userFormAdd" class="overlay" style="display: none;">
+    <div class="popup">
+        <form action="/Admin/create-user" method="post">
+            <fieldset>
+                <legend>Thêm Người Dùng</legend>
+
+                <div class="input-group">
+                    <label>Email:</label>
+                    <input type="email" name="email" required>
                 </div>
-            </div>
+                <div class="input-group">
+                    <label>Tài khoản:</label>
+                    <input type="text" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label>Mật khẩu:</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div>
+                    <button type="submit">Lưu</button>
+                    <button type="button" onclick="closeFormAdd()">Đóng</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
             <tbody id="userTableBody">
                 <% listUsers.forEach(user => { %>
                     <tr>
@@ -135,16 +137,16 @@
         function deleteUser(userID) {
     if (!confirm("Bạn có chắc muốn xóa tài khoản này?")) return;
 
-    console.log("Gửi request xóa userID:", userID); // Debug
+    console.log("Gửi request xóa userID:", userID);
 
-    fetch('http://localhost:8081/Admin/delete-user', {
+    fetch('/Admin/delete-user', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userID }) // Gửi đúng userID
+        body: JSON.stringify({ userID })
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message); // Hiển thị thông báo
+        alert(data.message);
         if (data.success) {
             location.reload();
         }
@@ -155,8 +157,9 @@
     });
 }
 
+
 function openFormAdd() {
-    document.getElementById("userFormAdd").style.display = "flex";
+    document.getElementById("userFormAdd").style.display = "block";
 }
 
 function closeFormAdd() {
@@ -180,10 +183,10 @@ function searchUsers() {
     fetch(`/Admin/search-users?query=${encodeURIComponent(searchValue)}`, {
         headers: { "Accept": "application/json" }
     })
-    .then(response => response.json()) // Chỉ nhận JSON, tránh lỗi HTML
+    .then(response => response.json())
     .then(data => {
         const tableBody = document.getElementById("userTableBody");
-        tableBody.innerHTML = ""; // Xóa danh sách cũ
+        tableBody.innerHTML = "";
 
         data.forEach(user => {
             const row = `

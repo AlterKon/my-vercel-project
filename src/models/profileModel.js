@@ -43,12 +43,22 @@ const getBookmarks = (userID) => {
 
 const getTransactions = (userID) => {
     return pool.query(`
-        SELECT t.TransactionID, t.PlanID, t.Amount, t.Status, t.PaymentMethod, t.CreatedAt, p.PlanName
-        FROM Transactions t
-        JOIN SubscriptionPlans p ON t.PlanID = p.PlanID
-        WHERE t.UserID = ?;
+      SELECT 
+        t.TransactionID, 
+        t.PlanID, 
+        p.PlanName, 
+        p.Price AS Amount,
+        t.Status, 
+        t.PaymentMethod, 
+        t.TransactionCode,
+        t.ProofImage,
+        t.CreatedAt
+      FROM Transactions t
+      JOIN SubscriptionPlans p ON t.PlanID = p.PlanID
+      WHERE t.UserID = ?
+      ORDER BY t.CreatedAt DESC;
     `, [userID]);
-};
+  };
 
 const getAuthorIncome = () => {
     return pool.query(`
@@ -81,13 +91,15 @@ const getSubscriptionPlanById = (planId) => {
     return pool.query(`SELECT * FROM SubscriptionPlans WHERE PlanID = ?`, [planId]);
 };
 
-const createTransaction = (userID, planID, amount, paymentMethod, proofImage) => {
-    return pool.query(`
-        INSERT INTO Transactions (UserID, PlanID, Amount, Status, PaymentMethod, ProofImage)
-        VALUES (?, ?, ?, 'pending', ?, ?)`,
-        [userID, planID, amount, paymentMethod, proofImage]
+const insertTransaction = (userID, planID, method, transactionCode, proofImage) => {
+    
+    const status = 'pending';
+    return pool.query(
+      `INSERT INTO Transactions (UserID, PlanID, PaymentMethod, TransactionCode, ProofImage, Status)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [userID, planID, method, transactionCode, proofImage, status]
     );
-};
+  };
 
 const getAllGenres = () => {
     return pool.query('SELECT * FROM Genres');
@@ -126,7 +138,7 @@ module.exports = {
     getPasswordByUserId,
     updatePassword,
     getSubscriptionPlanById,
-    createTransaction,
+    insertTransaction,
     getAllGenres,
     insertNovel,
     insertNovelGenres,
