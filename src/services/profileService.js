@@ -97,11 +97,11 @@ const createNovel = async (data, userID) => {
 };
 
 const getBookmarkChapter = async (userID, novelID) => {
-    const [bookmark] = await bookmarkModel.getUserBookmark(userID, novelID);
+    const [bookmark] = await profileModel.getUserBookmark(userID, novelID);
     if (bookmark.length > 0) {
         return bookmark[0].ChapterNumber;
     }
-    return null; // Không có bookmark
+    return null;
 };
 
 module.exports = {

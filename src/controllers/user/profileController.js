@@ -121,7 +121,7 @@ const ReadBookMark = async (req, res) => {
     const userID = req.session.userID;
 
     try {
-        const chapterNumber = await bookmarkService.getBookmarkChapter(userID, NovelID);
+        const chapterNumber = await profileService.getBookmarkChapter(userID, NovelID);
         const redirectChapter = chapterNumber ? chapterNumber : 1;
         res.redirect(`/user/read/${NovelID}/chapter/${redirectChapter}`);
     } catch (error) {
